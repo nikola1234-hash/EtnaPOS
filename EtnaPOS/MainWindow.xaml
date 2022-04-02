@@ -16,6 +16,7 @@
         <dxnav:TileNavPane Grid.Row="0">
             <dxnav:TileNavPane.NavButtons>
                 <dxnav:NavButton Content="Home" Command="{Binding NavigationCommand}" CommandParameter="{x:Static navigationEnum:Navigation.Home}" AllowGlyphTheming="True"/>
+                <dxnav:NavButton Content="POS" Command="{Binding NavigationCommand}" CommandParameter="{x:Static navigationEnum:Navigation.POS}" AllowGlyphTheming="True"/>
             </dxnav:TileNavPane.NavButtons>
         </dxnav:TileNavPane>
         <ContentControl Grid.Row="1" Content="{Binding CurrentViewModel, Mode=Default}"/>

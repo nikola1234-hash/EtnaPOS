@@ -17,19 +17,24 @@ namespace EtnaPOS
     /// </summary>
     public partial class App : Application
     {
-        public IServiceProvider ServiceProvider { get; set; }
+        public static IServiceProvider ServiceProvider { get; set; }
         protected void ConfigureServices()
         {
             var services = new ServiceCollection();
             services.AddLogging();
             services.AddTransient<MainViewModel>();
             services.AddTransient<HomeViewModel>();
+            services.AddSingleton<PosViewModel>();  
             services.AddSingleton<INavigationStore, NavigationStore>();
             services.AddSingleton<IViewFactory, ViewFactory>();
             services.AddTransient<EtnaDbContext>();
             ServiceProvider = services.BuildServiceProvider();
         }
-        protected override void OnStartup(StartupEventArgs e)
+        public static T? GetService<T>()
+        {
+            return (T?)ServiceProvider.GetService(typeof(T));
+        }
+        private void Application_Startup(object sender, StartupEventArgs e)
         {
             ConfigureServices();
             var viewModel = ServiceProvider.GetRequiredService<MainViewModel>();
@@ -38,12 +43,6 @@ namespace EtnaPOS
                 DataContext = viewModel
             };
             window.Show();
-            base.OnStartup(e);
-        }
-
-        private void Application_Startup(object sender, StartupEventArgs e)
-        {
-
         }
     }
 }

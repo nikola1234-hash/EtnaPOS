@@ -9,5 +9,8 @@
         <DataTemplate DataType="{x:Type viewModels:HomeViewModel}">
             <views:HomeView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:PosViewModel}">
+            <views:PosView/>
+        </DataTemplate>
     </Application.Resources>
 </Application>

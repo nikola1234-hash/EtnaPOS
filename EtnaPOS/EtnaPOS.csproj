@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="devexpress.wpf.controls" Version="21.2.3" />
     <PackageReference Include="DevExpress.Wpf.Core" Version="21.2.3" />
+    <PackageReference Include="devexpress.wpf.layoutcontrol" Version="21.2.3" />
     <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
