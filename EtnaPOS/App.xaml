@@ -1,0 +1,13 @@
+﻿<Application x:Class="EtnaPOS.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:EtnaPOS"
+             xmlns:viewModels="clr-namespace:EtnaPOS.ViewModels"
+             xmlns:views="clr-namespace:EtnaPOS.Views"
+             Startup="Application_Startup">
+    <Application.Resources>
+        <DataTemplate DataType="{x:Type viewModels:HomeViewModel}">
+            <views:HomeView/>
+        </DataTemplate>
+    </Application.Resources>
+</Application>
