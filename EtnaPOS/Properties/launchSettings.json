@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EtnaPOS": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

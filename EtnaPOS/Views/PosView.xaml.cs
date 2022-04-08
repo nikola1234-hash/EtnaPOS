@@ -25,32 +25,5 @@ namespace EtnaPOS.Views
             InitializeComponent();
         }
 
-        private void Canvas_Drop(object sender, DragEventArgs e)
-        {
-            var data = e.Data.GetData(DataFormats.Serializable);
-            if(data is UIElement element)
-            {
-                var dropPosition = e.GetPosition(element);
-                Canvas.SetLeft(element, dropPosition.X);
-                Canvas.SetTop(element, dropPosition.Y);
-                
-               
-            }
-        }
-
-        private void Canvas_DragOver(object sender, DragEventArgs e)
-        {
-
-        }
-
-        private void Canvas_DragLeave(object sender, DragEventArgs e)
-        {
-
-        }
-
-        private void Canvas_MouseMove(object sender, MouseEventArgs e)
-        {
-
-        }
     }
 }

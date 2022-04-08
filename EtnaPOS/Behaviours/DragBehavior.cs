@@ -1,5 +1,9 @@
-﻿using System;
+﻿using EtnaPOS.EtnaEventArgs;
+using EtnaPOS.Events.EventAggregator;
+using Prism.Events;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,10 +19,23 @@ namespace EtnaPOS.Behaviours
         private Point _elementStartPosition2;
         private Point _mouseStartPosition2;
         private static DragBehavior _instance = new DragBehavior();
+        private IEventAggregator _ea => App.GetService<IEventAggregator>();
+     
         public static DragBehavior Instance
         {
-            get { return _instance; }
-            set { _instance = value; }
+            get 
+            {
+                if(_instance != null)
+                {
+                    return _instance;
+                }
+                return new DragBehavior();
+            }
+            set 
+            {
+                
+                _instance = value; 
+            }
         }
 
         public static bool GetDrag(DependencyObject obj)
@@ -65,6 +82,7 @@ namespace EtnaPOS.Behaviours
             var parent = Application.Current.MainWindow;
             _mouseStartPosition2 = mouseButtonEventArgs.GetPosition(parent);
             ((UIElement)sender).CaptureMouse();
+            
         }
 
         private void ElementOnMouseLeftButtonUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
@@ -72,6 +90,12 @@ namespace EtnaPOS.Behaviours
             ((UIElement)sender).ReleaseMouseCapture();
             _elementStartPosition2.X = Transform.X;
             _elementStartPosition2.Y = Transform.Y;
+            _ea.GetEvent<TablePositionEvent>().Publish(Transform);
+
+            Debug.WriteLine("OnMouseButtonUp");
+            Debug.WriteLine(Transform.Y + " " + Transform.X);
+            Debug.WriteLine(_elementStartPosition2.Y + " " + _elementStartPosition2.X);
+            Debug.WriteLine("--------------------------------------------------------");
         }
 
         private void ElementOnMouseMove(object sender, MouseEventArgs mouseEventArgs)
@@ -82,6 +106,10 @@ namespace EtnaPOS.Behaviours
             if (!((UIElement)sender).IsMouseCaptured) return;
             Transform.X = _elementStartPosition2.X + diff.X;
             Transform.Y = _elementStartPosition2.Y + diff.Y;
+            
+            Debug.WriteLine(Transform.Y + " " + Transform.X);
+            
+
         }
     }
 }

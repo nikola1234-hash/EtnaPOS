@@ -1,43 +1,70 @@
-﻿<UserControl x:Class="EtnaPOS.Views.PosView"
+﻿<UserControl xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"  xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EtnaPOS.Views" 
              xmlns:i="clr-namespace:DevExpress.Mvvm.UI.Interactivity;assembly=DevExpress.Xpf.Core.v21.2" 
-             xmlns:local1="clr-namespace:EtnaPOS.Behaviours"
-             mc:Ignorable="d" 
+             xmlns:local1="clr-namespace:EtnaPOS.Behaviours" 
              xmlns:models="clr-namespace:EtnaPOS.Models"
+             xmlns:viewModels="clr-namespace:EtnaPOS.ViewModels" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"  x:Class="EtnaPOS.Views.PosView"
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
-             xmlns:viewModels="clr-namespace:EtnaPOS.ViewModels">
-
-    <ItemsControl x:Name="posView" ItemsSource="{Binding Path=Tables}">
+             >
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+    <Grid>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <dxlc:LayoutControl Visibility="{Binding IsVisible, Converter={StaticResource BoolToVis}}" Grid.Row="0">
+            <Grid>
+                
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <dx:SimpleButton Grid.Column="0" Height="50" Content="Novi sto" />
+                
+            </Grid>
+            
+        </dxlc:LayoutControl>
+   
+        <ItemsControl Focusable="True" Grid.Row="1" ItemsSource="{Binding Tables}">
+            
             <ItemsControl.Resources>
                 <DataTemplate DataType="{x:Type models:Table}">
-                <Border local1:DragBehavior.Drag="{Binding DataContext.AllowDrop, RelativeSource={RelativeSource AncestorLevel=1, AncestorType={x:Type local:PosView}}}">
+                    <Border Background="{Binding Rectangle.Fill, Mode=TwoWay}" BorderBrush="Black" BorderThickness="1" local1:DragBehavior.Drag="{Binding DataContext.AllowDrop, RelativeSource={RelativeSource AncestorLevel=1, AncestorType={x:Type local:PosView}}}">
+                        <Grid>
+                            <Rectangle Margin="10 0" Canvas.Top="{Binding Top, Mode=TwoWay}" Canvas.Left="{Binding Left, Mode=TwoWay}" Width="{Binding Rectangle.Width}" Height="{Binding Rectangle.Height}" Fill="{Binding Rectangle.Fill}"/>
+                            <TextBlock Margin="0 0" VerticalAlignment="Center" Foreground="Black" HorizontalAlignment="Center" Text="{Binding TableName}" FontSize="16" FontWeight="DemiBold"/>
+                        </Grid>
+                    </Border>
 
-                    <Rectangle Canvas.Top="{Binding Top, Mode=TwoWay}" Canvas.Left="{Binding Left, Mode=TwoWay}" Width="{Binding Rectangle.Width}" Height="{Binding Rectangle.Height}" Fill="{Binding Rectangle.Fill}">
 
-                    </Rectangle>
-                   
-                </Border>
-                
-                  
                 </DataTemplate>
-                
+
             </ItemsControl.Resources>
+
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                <Canvas Background="Transparent"/>
+                    <Canvas Background="Transparent"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemContainerStyle>
-                <Style TargetType="ContentPresenter">
-                    <Setter Property="Canvas.Top" Value="{Binding Path=Top, Mode=TwoWay}" />
-                    <Setter Property="Canvas.Left" Value="{Binding Path=Left, Mode=TwoWay}" />
-                    
-            </Style>
+                <Style TargetType="{x:Type ContentPresenter}">
+                    <Setter Property="Canvas.Top" Value="{Binding Top, Mode=TwoWay}" />
+                    <Setter Property="Canvas.Left" Value="{Binding Left, Mode=TwoWay}" />
+
+                </Style>
             </ItemsControl.ItemContainerStyle>
+         
         </ItemsControl>
+    </Grid>
+
 
 </UserControl>
