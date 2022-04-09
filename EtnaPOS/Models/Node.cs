@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,37 +18,53 @@ namespace EtnaPOS.Models
     }
     public class Node
     {
-        
-        public List<Product> Products { get; set; }
-        public List<Category> Categories { get; set; }
-        
-        public static List<Category> GetNodes()
+
+        public static ObservableCollection<Category> GetNodes()
         {
-            List<Category> nodes = new List<Category>();
-            nodes.Add(new Category(0, "Pice"));
-            nodes.Add(new Category(1, "Hrana"));
-            var t = nodes.FirstOrDefault(i => i.Id == 0);
-            t.SubCategories.Add(new Category(0, "Sokovi"));
-            t.SubCategories.FirstOrDefault(s => s.Id == 0)?.Products.Add(new Product(0, "Coca Cola", 155.00));
-            t.SubCategories.FirstOrDefault(s => s.Id == 0)?.Products.Add(new Product(1, "Fanta", 155.00));
-            t.SubCategories.FirstOrDefault(s => s.Id == 0)?.Products.Add(new Product(1, "Fanta", 155.00));
+            ObservableCollection<Category> nodes = new ObservableCollection<Category>();
+            nodes.Add(new Category(0, "Artikli"));
+                   
             return nodes;
         }
     }
    
-    public class Category
+    public class Category : BaseModel
     {
         public TypeNode Type { get; set; }
         public int Id { get; set; }
         public string Name { get; set; }
-        public List<Category> SubCategories { get; set; }
-        public List<Product> Products { get; set; }
+        private ObservableCollection<Category> _subCategories;
+
+        public ObservableCollection<Category> SubCategories
+        {
+            get { return _subCategories; }
+            set
+            { 
+                _subCategories = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        private ObservableCollection<Product> _products;
+
+        public ObservableCollection<Product> Products
+        {
+            get { return _products; }
+            set
+            {
+                _products = value;
+                OnPropertyChanged();
+            }
+        }
+
+        
         public Category(int id, string name)
         {
             Id = id;
             Name = name;
-            SubCategories = new List<Category>();
-            Products = new List<Product>();
+            SubCategories = new ObservableCollection<Category>();
+            Products = new ObservableCollection<Product>();
             Type = TypeNode.FolderClosed;
         }
     }
