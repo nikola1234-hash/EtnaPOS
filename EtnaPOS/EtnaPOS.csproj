@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="devexpress.wpf.controls" Version="21.2.3" />
     <PackageReference Include="DevExpress.Wpf.Core" Version="21.2.3" />
+    <PackageReference Include="devexpress.wpf.grid.core" Version="21.2.3" />
     <PackageReference Include="devexpress.wpf.layoutcontrol" Version="21.2.3" />
     <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
@@ -29,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Images\TreeViewImages\" />
     <Folder Include="ViewModels\Dialogs\" />
   </ItemGroup>
 
@@ -42,6 +44,21 @@
 
   <ItemGroup>
     <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Images\TreeViewImages\Active.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Images\TreeViewImages\Cash.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Images\TreeViewImages\FolderClosed.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Images\TreeViewImages\FolderOpen.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Images\TreeViewImages\NotActive.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Properties\Settings.settings">
