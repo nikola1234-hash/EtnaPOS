@@ -15,12 +15,17 @@ namespace EtnaPOS.Models
             {
                 return null;
             }
-            if(item is Category && ((Category)item).Products.Count > 0)
-                return ((Category)item).Products;
-            else if (item is Category)
-                return ((Category)item).SubCategories;
-            
+            if (item is Product)
+            {
+                if (((Product)item).Products != null && ((Product)item).Products.Count > 0)
+                {
+                    return ((Product)item).Products;
+                }
+            }
+            //if (item is Category && ((Category)item).Products.Count > 0)
+            //    return ((Category)item).Products;
             return null;
+            
         }
     }
 }

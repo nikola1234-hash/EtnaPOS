@@ -27,7 +27,7 @@ namespace EtnaPOS.Services
             }
             return products;
         }
-        public Product GetProductById(int id)
+        public Product GetProductById(Guid id)
         {
             var file = fullPath;
             using (StreamReader sr = new StreamReader(file))
@@ -45,15 +45,9 @@ namespace EtnaPOS.Services
             {
                 var json = sr.ReadToEnd();
                 products = JsonConvert.DeserializeObject<List<Product>>(json);
-                if(products == null)
+                if (products == null)
                 {
                     products = new List<Product>();
-                    product.Id = 0;
-                }
-                else
-                {
-                    var productId = products.Last().Id;
-                    product.Id = productId + 1;
                 }
                 
                 products.Add(product);
@@ -62,7 +56,7 @@ namespace EtnaPOS.Services
             SaveData(products);
             return product;
         }
-        public void UpdateProduct(int id, Product product)
+        public void UpdateProduct(Guid id, Product product)
         {
             var file = fullPath;
             List<Product> products;
@@ -74,7 +68,6 @@ namespace EtnaPOS.Services
                 {
                     if (item.Id == id)
                     {
-                        item.CategoryId = product.CategoryId;
                         item.Price = product.Price;
                         item.Name = product.Name;
                         item.IsActive = product.IsActive;
@@ -87,7 +80,7 @@ namespace EtnaPOS.Services
                 SaveData(products);
             }
         }
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             var file = fullPath;
             List<Product> products;

@@ -4,7 +4,7 @@
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:ViewModels="clr-namespace:EtnaPOS.ViewModels.WindowViewModels"
     x:Class="EtnaPOS.Windows.CreateProductWindow"
-    Title="CreateProductWindow" Height="300" Width="250" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+    Title="CreateProductWindow" Height="300" Width="350" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
     >
 
     <dxmvvm:Interaction.Behaviors>
@@ -12,12 +12,12 @@
     </dxmvvm:Interaction.Behaviors>
 
     <Grid>
-        <StackPanel Width="90" HorizontalAlignment="Center" Margin="0 20" Orientation="Vertical">
+        <StackPanel Width="150" HorizontalAlignment="Center" Margin="0 20" Orientation="Vertical">
             <Label Content="Naziv Artikla:"></Label>
             <TextBox Text="{Binding Name}"/>
             <Label Content="Cena Artikla:"></Label>
             <TextBox Text="{Binding Price}"/>
-            <Button Content="Sacuvaj" Margin="0 30" Command="{Binding CreateCommand}"></Button>
+            <Button Content="Sacuvaj" Margin="0 30" Command="{Binding CreateCommand}" IsDefault="True"></Button>
         </StackPanel>
         
     </Grid>

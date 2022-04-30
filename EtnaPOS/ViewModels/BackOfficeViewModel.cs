@@ -17,7 +17,7 @@ namespace EtnaPOS.ViewModels
     public class BackOfficeViewModel : BaseViewModel
     {
         private IProductService productService => App.GetService<IProductService>();    
-        public ObservableCollection<Category> Categories { get; set; }
+        public ObservableCollection<Product> Products { get; set; }
         private object _selectedItem;
 
         public object SelectedItem
@@ -38,7 +38,7 @@ namespace EtnaPOS.ViewModels
         public ICommand DeleteArticleCommand { get; set; }
         public BackOfficeViewModel()
         {
-            Categories = Node.GetNodes();
+            Products = Node.GetNodes();
             NewCategoryCommand = new DelegateCommand(CategoryWindow);
             NewArticleCommand = new DelegateCommand(CreateArticleWindow);
             DeactivateArticleCommand = new DelegateCommand(DeactivateArticle);
@@ -51,11 +51,11 @@ namespace EtnaPOS.ViewModels
 
         private void CreateArticleWindow()
         {
-            if(SelectedItem is Category category)
+            if(SelectedItem is Product product)
             {
                 CreateProductWindow window = new CreateProductWindow
                 {
-                    DataContext = new CreateProductViewModel(category.Id)
+                    DataContext = new CreateProductViewModel()
                 };
                 window.ShowDialog();
             }
@@ -79,13 +79,13 @@ namespace EtnaPOS.ViewModels
         private void CreateArticle(object obj)
         {
             
-            if (SelectedItem is Category category)
+            if (SelectedItem is Product pr)
             {
                 if (obj is Product product)
                 {
                     var newProduct = productService.AddProduct(product);
-                    category.Products.Add(newProduct);
-                    Node.SaveNodes(Categories);
+                    pr.Products.Add(newProduct);
+                    Node.SaveNodes(Products);
                 }
             }
             
@@ -98,21 +98,14 @@ namespace EtnaPOS.ViewModels
         private void CreateNewCategory(string categoryName)
         {
             
-            var artikli = Categories.FirstOrDefault();
-            var index = artikli.SubCategories;
-            int i = Categories.Last().Id + 1 ;
-            if (!index.Any())
-                artikli.SubCategories.Add(new Category(i, categoryName));
-            else
-            {
-                i = index.Last().Id + 1;
-                if (SelectedItem is Category category)
-                {
-                    category.SubCategories.Add(new Category(i, categoryName));
+            
+        if (SelectedItem is Product product)
+        {
+            product.Products.Add(new Product(Guid.NewGuid(), categoryName));
                     
-                }
-            }
-            Node.SaveNodes(Categories);
+        }
+
+            Node.SaveNodes(Products);
         }
         public override void Dispose()
         {

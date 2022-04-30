@@ -34,14 +34,13 @@ namespace EtnaPOS.ViewModels.WindowViewModels
         }
         public int CategoryId { get; set; }
         public ICommand CreateCommand { get; set; }
-        public CreateProductViewModel(int categoryId)
+        public CreateProductViewModel()
         {
-            CategoryId = categoryId;
             CreateCommand = new DelegateCommand(CreateProduct);
         }
         public void CreateProduct()
         {
-            Product product = new Product(Name, Price, CategoryId);
+            Product product = new Product(Name, Price);
             eventAggregator.GetEvent<PassNewProductEventArgs>().Publish(product);
             WindowService.Close();
         }

@@ -35,10 +35,12 @@
             </Grid.ColumnDefinitions>
          
             <dxg:TreeViewControl x:Name="treeView" Width="300" Grid.Column="0" 
-                                 ItemsSource="{Binding Categories}"
+                                 ItemsSource="{Binding Products}"
                                  TreeViewFieldName="Name"
                                  ShowNodeImages="True"
                                  ShowSearchPanel="True"
+                                 TreeDerivationMode="ChildNodesSelector"
+                                 ChildNodesPath="Products"
                                  NodeImageSelector="{StaticResource solutionNodeImageSelector}"
                                  SelectedItem="{Binding SelectedItem}"
                                  IsNodeMenuEnabled="True">
@@ -49,10 +51,10 @@
                     <dxb:BarButtonItem Content="Izbrisi Artikal" />
                    
                 </dxg:TreeViewControl.NodeMenuCustomizations>
-                
                 <dxg:TreeViewControl.ChildNodesSelector>
                     <local:CustomChildrenSelector/>
                 </dxg:TreeViewControl.ChildNodesSelector>
+                
             </dxg:TreeViewControl>
         </Grid>
     </Grid>
