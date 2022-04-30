@@ -1,7 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using EtnaPOS.Services;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 
 namespace EtnaPOS.Models
 {
@@ -12,12 +15,15 @@ namespace EtnaPOS.Models
         FolderOpen,
         FolderClosed
     }
+    
     public class Node
     {
+        private static IProductService productService = App.GetService<IProductService>();
         private static string folder => "\\Data";
         private static string data => "\\treedata.json";
         public static ObservableCollection<Category> GetNodes()
         {
+            ObservableCollection<Category> nodes;
             var doesExist = Directory.Exists(Directory.GetCurrentDirectory() + folder);
             if (doesExist)
             {
@@ -25,7 +31,68 @@ namespace EtnaPOS.Models
                 using(StreamReader sr = new StreamReader(file))
                 {
                     var json = sr.ReadToEnd();
-                    var nodes = JsonConvert.DeserializeObject<ObservableCollection<Category>>(json);
+                    var nodeData = JsonConvert.DeserializeObject<ObservableCollection<Category>>(json);
+                    var products = productService.GetProducts();
+                    if(products == null)
+                    {
+                        products = new ObservableCollection<Product>();
+                    }
+                    var query = from node in nodeData
+                                join product in products on node.Id equals product.CategoryId into cat
+                                select new Category()
+                                {
+                                    
+                                    Id = node.Id,
+                                    Products = new ObservableCollection<Product>(),
+                                    SubCategories = node.SubCategories,
+                                    Name = node.Name,
+                                    Type = node.Type
+                                };
+                    //Dont touch DRAGONS!
+                    foreach(var q in query)
+                    {
+                        foreach(var product in products)
+                        {
+                            if(q.Id == product.CategoryId)
+                            {
+                                q.Products.Add(product);
+                            }
+                        }
+                        if (q.Products.Count > 0)
+                        {
+                            foreach (var product in q.Products)
+                            {
+                                if (q.Id == product.CategoryId)
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    q.Products.Remove(product);
+                                    if(q.Products.Count == 0)
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        foreach(var s in q.SubCategories)
+                        {
+                            if(s.Products == null)
+                            {
+                                s.Products = new ObservableCollection<Product>();
+                            }
+                           
+                            foreach(var product in products)
+                            {
+                                if(product.CategoryId == s.Id)
+                                {
+                                    s.Products.Add(product);
+                                }
+                            }
+                        }
+                    }
+                    nodes = new ObservableCollection<Category>(query.ToList());
                     return nodes;
                 }
                
@@ -75,7 +142,7 @@ namespace EtnaPOS.Models
 
 
         private ObservableCollection<Product> _products;
-
+        [JsonIgnore]
         public ObservableCollection<Product> Products
         {
             get { return _products; }
@@ -95,14 +162,17 @@ namespace EtnaPOS.Models
             Products = new ObservableCollection<Product>();
             Type = TypeNode.FolderClosed;
         }
+        public Category()
+        {
+
+        }
 
     }
    
     public class Product
     {
-        public Product(int id,string name, double price, int categoryId)
+        public Product(string name, double price, int categoryId)
         {
-            Id = id;
             CategoryId = categoryId;
             Name = name;
             IsActive = true;

@@ -25,7 +25,7 @@
         </Grid.RowDefinitions>
         <dxlc:LayoutControl Grid.Row="0">
             <dxlc:LayoutGroup>
-                <Button Command="{Binding NewArticleCommand}"  Content="Novi artikal" Height="50"></Button>
+                <Button Command=""  Content="Novi artikal" Height="50"></Button>
             </dxlc:LayoutGroup>
         </dxlc:LayoutControl>
         <Grid Grid.Row="1">
@@ -43,7 +43,7 @@
                                  SelectedItem="{Binding SelectedItem}"
                                  IsNodeMenuEnabled="True">
                 <dxg:TreeViewControl.NodeMenuCustomizations>
-                    <dxb:BarButtonItem Content="Novi Artikal" />
+                    <dxb:BarButtonItem Content="Novi Artikal" Command="{Binding DataContext.NewArticleCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type window:BackOfficeWindow}}}" />
                     <dxb:BarButtonItem Content="Nova Kategorija" Command="{Binding DataContext.NewCategoryCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type window:BackOfficeWindow}}}" />
                     <dxb:BarButtonItem Content="Deaktiviraj Artikal" />
                     <dxb:BarButtonItem Content="Izbrisi Artikal" />

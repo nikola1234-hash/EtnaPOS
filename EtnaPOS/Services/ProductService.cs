@@ -19,12 +19,13 @@ namespace EtnaPOS.Services
         public ObservableCollection<Product> GetProducts()
         {
             var file = fullPath;
+            ObservableCollection<Product> products = new ObservableCollection<Product>();
             using (StreamReader sr = new StreamReader(file))
             {
                 var json = sr.ReadToEnd();
-                var products = JsonConvert.DeserializeObject<ObservableCollection<Product>>(json);
-                return products;
+                products = JsonConvert.DeserializeObject<ObservableCollection<Product>>(json);
             }
+            return products;
         }
         public Product GetProductById(int id)
         {
@@ -36,26 +37,39 @@ namespace EtnaPOS.Services
                 return product;
             }
         }
-        public void CreateProduct(Product product)
+        public Product AddProduct(Product product)
         {
             var file = fullPath;
+            List<Product> products;
             using (StreamReader sr = new StreamReader(file))
             {
                 var json = sr.ReadToEnd();
-                var products = JsonConvert.DeserializeObject<List<Product>>(json);
-                var productId = products.Last().Id;
-                product.Id = productId + 1;
+                products = JsonConvert.DeserializeObject<List<Product>>(json);
+                if(products == null)
+                {
+                    products = new List<Product>();
+                    product.Id = 0;
+                }
+                else
+                {
+                    var productId = products.Last().Id;
+                    product.Id = productId + 1;
+                }
+                
                 products.Add(product);
-                SaveData(products);
+
             }
+            SaveData(products);
+            return product;
         }
         public void UpdateProduct(int id, Product product)
         {
             var file = fullPath;
+            List<Product> products;
             using (StreamReader sr = new StreamReader(file))
             {
                 var json = sr.ReadToEnd();
-                var products = JsonConvert.DeserializeObject<List<Product>>(json);
+                products = JsonConvert.DeserializeObject<List<Product>>(json);
                 foreach (var item in products)
                 {
                     if (item.Id == id)
@@ -64,27 +78,37 @@ namespace EtnaPOS.Services
                         item.Price = product.Price;
                         item.Name = product.Name;
                         item.IsActive = product.IsActive;
-                        SaveData(products);
+                        
                     }
                 }
+            }
+            if(products!= null)
+            {
+                SaveData(products);
             }
         }
         public void Delete(int id)
         {
             var file = fullPath;
+            List<Product> products;
             using (StreamReader sr = new StreamReader(file))
             {
                 var json = sr.ReadToEnd();
-                var products = JsonConvert.DeserializeObject<List<Product>>(json);
+                products = JsonConvert.DeserializeObject<List<Product>>(json);
                 foreach (var item in products)
                 {
                     if (item.Id == id)
                     {
                         products.Remove(item);
-                        SaveData(products);
+                        
                     }
                 }
             }
+            if (products != null)
+            {
+                SaveData(products);
+            }
+            
         }
         public void SaveData(List<Product> products)
         {

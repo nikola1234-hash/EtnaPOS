@@ -6,7 +6,7 @@ namespace EtnaPOS.Services
 {
     public interface IProductService
     {
-        void CreateProduct(Product product);
+        Product AddProduct(Product product);
         void Delete(int id);
         Product GetProductById(int id);
         ObservableCollection<Product> GetProducts();

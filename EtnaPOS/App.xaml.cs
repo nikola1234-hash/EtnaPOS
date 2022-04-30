@@ -58,6 +58,9 @@ namespace EtnaPOS
         {
             string folder = "\\Data";
             var doesExist = Directory.Exists(Directory.GetCurrentDirectory() + folder);
+            var fileExists = File.Exists(Directory.GetCurrentDirectory() + folder + "\\products.json");
+            if (!fileExists)
+                File.Create(Directory.GetCurrentDirectory() + folder + "\\products.json");
             if (doesExist) return;
             Directory.CreateDirectory(Directory.GetCurrentDirectory() + folder);
 
