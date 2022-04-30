@@ -2,10 +2,8 @@
 
 namespace EtnaPOS.DAL.Models
 {
-    public class User
+    public class User : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
         [Required]
         [StringLength(50)]
         public string FirstName { get; set; }

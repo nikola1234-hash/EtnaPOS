@@ -21,6 +21,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Prism.Core" Version="8.1.97" />
   </ItemGroup>
 
@@ -31,6 +32,8 @@
 
   <ItemGroup>
     <Folder Include="Images\TreeViewImages\" />
+    <Folder Include="DTO\" />
+    <Folder Include="Data\" />
     <Folder Include="ViewModels\Dialogs\" />
   </ItemGroup>
 

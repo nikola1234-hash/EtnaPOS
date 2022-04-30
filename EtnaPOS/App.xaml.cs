@@ -43,6 +43,7 @@ namespace EtnaPOS
             services.AddSingleton<IViewFactory, ViewFactory>();
             services.AddTransient<EtnaDbContext>();
             services.AddSingleton<IEventAggregator, EventAggregator>();
+            services.AddSingleton<IProductService, ProductService>();
             
 
 
@@ -53,8 +54,19 @@ namespace EtnaPOS
         {
             return (T?)ServiceProvider.GetService(typeof(T));
         }
+        private void ConfigureData()
+        {
+            string folder = "\\Data";
+            var doesExist = Directory.Exists(Directory.GetCurrentDirectory() + folder);
+            if (doesExist) return;
+            Directory.CreateDirectory(Directory.GetCurrentDirectory() + folder);
+
+
+        }
+    
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            ConfigureData();
             ConfigureServices();
             var viewModel = ServiceProvider.GetRequiredService<MainViewModel>();
             MainWindow window = new MainWindow

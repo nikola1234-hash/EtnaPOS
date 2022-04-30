@@ -25,7 +25,7 @@
         </Grid.RowDefinitions>
         <dxlc:LayoutControl Grid.Row="0">
             <dxlc:LayoutGroup>
-                <Button Content="Novi artikal" Height="50"></Button>
+                <Button Command="{Binding NewArticleCommand}"  Content="Novi artikal" Height="50"></Button>
             </dxlc:LayoutGroup>
         </dxlc:LayoutControl>
         <Grid Grid.Row="1">

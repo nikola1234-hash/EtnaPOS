@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Media;
+using System.IO;
 
 namespace EtnaPOS.Models
 {
@@ -18,16 +14,48 @@ namespace EtnaPOS.Models
     }
     public class Node
     {
-
+        private static string folder => "\\Data";
+        private static string data => "\\treedata.json";
         public static ObservableCollection<Category> GetNodes()
         {
-            ObservableCollection<Category> nodes = new ObservableCollection<Category>();
-            nodes.Add(new Category(0, "Artikli"));
-                   
-            return nodes;
+            var doesExist = Directory.Exists(Directory.GetCurrentDirectory() + folder);
+            if (doesExist)
+            {
+                var file = Directory.GetCurrentDirectory() + folder + data;
+                using(StreamReader sr = new StreamReader(file))
+                {
+                    var json = sr.ReadToEnd();
+                    var nodes = JsonConvert.DeserializeObject<ObservableCollection<Category>>(json);
+                    return nodes;
+                }
+               
+            }
+            
+            return null;
         }
+        public static void SaveNodes(ObservableCollection<Category> categories)
+        {
+            check:
+            var doesExist = Directory.Exists(Directory.GetCurrentDirectory() + folder);
+            
+            if (doesExist)
+            {
+                var file = Directory.GetCurrentDirectory() + folder + data;
+                var serialized = JsonConvert.SerializeObject(categories);
+                File.WriteAllText(file, serialized);
+            }
+            else
+            {
+                Directory.CreateDirectory(Directory.GetCurrentDirectory() + "\\Data");
+                goto check;
+            }
+           
+            
+            
+        }
+
     }
-   
+    [Serializable]
     public class Category : BaseModel
     {
         public TypeNode Type { get; set; }
@@ -67,22 +95,22 @@ namespace EtnaPOS.Models
             Products = new ObservableCollection<Product>();
             Type = TypeNode.FolderClosed;
         }
+
     }
    
     public class Product
     {
-
-
-        public Product(int id,string name, double price)
+        public Product(int id,string name, double price, int categoryId)
         {
             Id = id;
-
+            CategoryId = categoryId;
             Name = name;
             IsActive = true;
             Price = price;
             Type = IsActive ? TypeNode.Active : TypeNode.NotActive;
         }
         public TypeNode Type { get; set; }
+        public int CategoryId { get; set; }
         public int Id{ get; set; }
         public string Name { get; set; }
         public double Price { get; set; }   

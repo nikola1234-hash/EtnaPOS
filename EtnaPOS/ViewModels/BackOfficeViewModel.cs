@@ -1,6 +1,7 @@
 ﻿using DevExpress.Mvvm;
 using EtnaPOS.EtnaEventArgs;
 using EtnaPOS.Models;
+using EtnaPOS.Services;
 using EtnaPOS.Windows;
 using Prism.Events;
 using System;
@@ -13,6 +14,7 @@ namespace EtnaPOS.ViewModels
 {
     public class BackOfficeViewModel : BaseViewModel
     {
+        private IProductService productService => App.GetService<IProductService>();    
         public ObservableCollection<Category> Categories { get; set; }
         private object _selectedItem;
 
@@ -36,7 +38,7 @@ namespace EtnaPOS.ViewModels
         {
             Categories = Node.GetNodes();
             NewCategoryCommand = new DelegateCommand(CategoryWindow);
-            NewArticleCommand = new DelegateCommand(CreateArticle);
+            NewArticleCommand = new DelegateCommand(CreateArticleWindow);
             DeactivateArticleCommand = new DelegateCommand(DeactivateArticle);
             ActivateArticleCommand = new DelegateCommand(ActivateArticle);
             DeleteArticleCommand = new DelegateCommand(DeleteArticle);
@@ -44,7 +46,11 @@ namespace EtnaPOS.ViewModels
             _ea.GetEvent<PassStringEventArgs>().Subscribe(CreateNewCategory);
         }
 
-   
+        private void CreateArticleWindow()
+        {
+            throw new NotImplementedException();
+        }
+
         private void DeleteArticle()
         {
             throw new NotImplementedException();
@@ -60,9 +66,14 @@ namespace EtnaPOS.ViewModels
             throw new NotImplementedException();
         }
 
-        private void CreateArticle()
+        private void CreateArticle(Product product)
         {
-            throw new NotImplementedException();
+            if (SelectedItem is Category category)
+            {
+                category.Products.Add(product);
+                Node.SaveNodes(Categories);
+            }
+            
         }
         private void CategoryWindow()
         {
@@ -72,7 +83,7 @@ namespace EtnaPOS.ViewModels
         private void CreateNewCategory(string categoryName)
         {
             
-            var artikli = Categories.FirstOrDefault(s => s.Id == 0);
+            var artikli = Categories.FirstOrDefault();
             var index = artikli.SubCategories;
             int i = 0;
             if (!index.Any())
@@ -83,13 +94,9 @@ namespace EtnaPOS.ViewModels
                 if (SelectedItem is Category category)
                 {
                     category.SubCategories.Add(new Category(i, categoryName));
+                    Node.SaveNodes(Categories);
                 }
-                
-                //artikli.SubCategories.Add(new Category(i, categoryName));
             }
-            
-           
-            
         }
         public override void Dispose()
         {
