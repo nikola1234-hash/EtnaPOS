@@ -14,9 +14,13 @@
     <Grid>
         <StackPanel Width="150" HorizontalAlignment="Center" Margin="0 20" Orientation="Vertical">
             <Label Content="Naziv Artikla:"></Label>
-            <TextBox Text="{Binding Name}"/>
+            <TextBox Text="{Binding Name, Mode=TwoWay, 
+                        UpdateSourceTrigger=PropertyChanged, 
+                        Delay=250}"/>
             <Label Content="Cena Artikla:"></Label>
-            <TextBox Text="{Binding Price}"/>
+            <TextBox Text="{Binding Price, Mode=TwoWay, 
+                        UpdateSourceTrigger=PropertyChanged, 
+                        Delay=250}"/>
             <Button Content="Sacuvaj" Margin="0 30" Command="{Binding CreateCommand}" IsDefault="True"></Button>
         </StackPanel>
         

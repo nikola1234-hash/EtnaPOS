@@ -15,11 +15,11 @@ namespace EtnaPOS.Models
             {
                 return null;
             }
-            if (item is Product)
+            if (item is Node)
             {
-                if (((Product)item).Products != null && ((Product)item).Products.Count > 0)
+                if (((Node)item).Children != null && ((Node)item).Children.Count > 0)
                 {
-                    return ((Product)item).Products;
+                    return ((Node)item).Children;
                 }
             }
             //if (item is Category && ((Category)item).Products.Count > 0)

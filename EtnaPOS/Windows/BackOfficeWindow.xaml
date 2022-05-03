@@ -11,9 +11,7 @@
     <dx:ThemedWindow.Resources>
         <service:SolutionNodeImageSelector x:Key="solutionNodeImageSelector"/>
     </dx:ThemedWindow.Resources>
-    <dxmvvm:Interaction.Behaviors>
-        <dxmvvm:EventToCommand/>
-    </dxmvvm:Interaction.Behaviors>
+ 
     <dx:ThemedWindow.DataContext>
         <ViewModels:BackOfficeViewModel/>
     </dx:ThemedWindow.DataContext>
@@ -25,7 +23,7 @@
         </Grid.RowDefinitions>
         <dxlc:LayoutControl Grid.Row="0">
             <dxlc:LayoutGroup>
-                <Button Command=""  Content="Novi artikal" Height="50"></Button>
+            
             </dxlc:LayoutGroup>
         </dxlc:LayoutControl>
         <Grid Grid.Row="1">
@@ -35,17 +33,21 @@
             </Grid.ColumnDefinitions>
          
             <dxg:TreeViewControl x:Name="treeView" Width="300" Grid.Column="0" 
-                                 ItemsSource="{Binding Products}"
+                                 ItemsSource="{Binding TreeNodes}"
                                  TreeViewFieldName="Name"
                                  ShowNodeImages="True"
                                  ShowSearchPanel="True"
                                  TreeDerivationMode="ChildNodesSelector"
-                                 ChildNodesPath="Products"
+                                 ChildNodesPath="Children"
                                  NodeImageSelector="{StaticResource solutionNodeImageSelector}"
                                  SelectedItem="{Binding SelectedItem}"
                                  IsNodeMenuEnabled="True">
+                <dxmvvm:Interaction.Behaviors>
+                    <dxmvvm:EventToCommand EventName="NodeDoubleClick" Command="{Binding NewArticleCommand}"/>
+                </dxmvvm:Interaction.Behaviors>
                 <dxg:TreeViewControl.NodeMenuCustomizations>
-                    <dxb:BarButtonItem Content="Novi Artikal" Command="{Binding DataContext.NewArticleCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type window:BackOfficeWindow}}}" />
+                    <dxb:BarButtonItem Content="{Binding DataContext.AddArticleText, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type window:BackOfficeWindow}}}"
+                                       Command="{Binding DataContext.NewArticleCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type window:BackOfficeWindow}}}" />
                     <dxb:BarButtonItem Content="Nova Kategorija" Command="{Binding DataContext.NewCategoryCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type window:BackOfficeWindow}}}" />
                     <dxb:BarButtonItem Content="Deaktiviraj Artikal" />
                     <dxb:BarButtonItem Content="Izbrisi Artikal" />

@@ -1,4 +1,6 @@
 ﻿using DevExpress.Mvvm;
+using EtnaPOS.DAL.DataAccess;
+using EtnaPOS.DAL.Models;
 using EtnaPOS.EtnaEventArgs;
 using EtnaPOS.Events.EventAggregator;
 using EtnaPOS.Models;
@@ -10,15 +12,33 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 
 namespace EtnaPOS.ViewModels
 {
     public class BackOfficeViewModel : BaseViewModel
     {
-        private IProductService productService => App.GetService<IProductService>();    
-        public ObservableCollection<Product> Products { get; set; }
+        private ITreeViewNodeGenerator _treeViewNodeGenerator => App.GetService<ITreeViewNodeGenerator>();
+        public ObservableCollection<Node> TreeNodes { get; set; }
         private object _selectedItem;
+        private EtnaDbContext _db => App.GetService<EtnaDbContext>();
+        public string AddArticleText
+        {
+            get 
+            {
+                if(SelectedItem is Product product && product.Type != TypeNode.FolderClosed)
+                {
+                    return "Izmeni";
+                    
+                }
+                else
+                {
+                    return "Novi artikal";
+                }
+                
+            }
+        }
 
         public object SelectedItem
         {
@@ -38,7 +58,8 @@ namespace EtnaPOS.ViewModels
         public ICommand DeleteArticleCommand { get; set; }
         public BackOfficeViewModel()
         {
-            Products = Node.GetNodes();
+            CreateInitialCategory();
+            GenerateNodes();
             NewCategoryCommand = new DelegateCommand(CategoryWindow);
             NewArticleCommand = new DelegateCommand(CreateArticleWindow);
             DeactivateArticleCommand = new DelegateCommand(DeactivateArticle);
@@ -47,24 +68,72 @@ namespace EtnaPOS.ViewModels
             _ea = App.GetService<IEventAggregator>();
             _ea.GetEvent<PassStringEventArgs>().Subscribe(CreateNewCategory);
             _ea.GetEvent<PassNewProductEventArgs>().Subscribe(CreateArticle);
+            _ea.GetEvent<EditedProductEventArgs>().Subscribe(EditArticle);
         }
-
-        private void CreateArticleWindow()
+        private void GenerateNodes()
         {
-            if(SelectedItem is Product product)
+            if(TreeNodes == null)
             {
-                CreateProductWindow window = new CreateProductWindow
-                {
-                    DataContext = new CreateProductViewModel()
-                };
-                window.ShowDialog();
+                TreeNodes = _treeViewNodeGenerator.GenerateNodes();
+            }
+            else
+            {
+                TreeNodes.Clear();
+                TreeNodes = _treeViewNodeGenerator.GenerateNodes();
             }
         }
-
         private void DeleteArticle()
         {
             throw new NotImplementedException();
         }
+
+        private void EditArticle(object obj)
+        {
+            var item = (Artikal)obj;
+            try
+            {
+                var toUpdate = _db.Artikli.FirstOrDefault(s => s.Id == item.Id);
+                if(toUpdate != null)
+                {
+                    toUpdate.Price = item.Price;
+                    toUpdate.Name = item.Name;
+                    _db.SaveChanges();
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+            GenerateNodes();
+        }
+     
+        
+        private void CreateArticleWindow()
+        {
+            if(SelectedItem is Node node)
+            {
+                if(node.Type == TypeNode.FolderClosed)
+                {
+                    CreateProductWindow window = new CreateProductWindow
+                    {
+                        DataContext = new ProductWindowViewModel(node.Id)
+                    };
+                    window.ShowDialog();
+                }
+                else
+                {
+                    var artikal = _db.Artikli.FirstOrDefault(s => s.Id == node.Id);
+                    CreateProductWindow window = new CreateProductWindow
+                    {
+                        DataContext = new ProductWindowViewModel(artikal)
+                    };
+                    window.ShowDialog();
+                }
+                GenerateNodes();
+             
+            }
+        }
+
 
         private void ActivateArticle()
         {
@@ -78,17 +147,31 @@ namespace EtnaPOS.ViewModels
 
         private void CreateArticle(object obj)
         {
-            
-            if (SelectedItem is Product pr)
+
+            if (obj is Artikal artikal)
             {
-                if (obj is Product product)
-                {
-                    var newProduct = productService.AddProduct(product);
-                    pr.Products.Add(newProduct);
-                    Node.SaveNodes(Products);
-                }
+                _db.Artikli.Add(artikal);
+                _db.SaveChanges();
+                GenerateNodes();
             }
             
+            
+        }
+        private void CreateInitialCategory()
+        {
+            var artikli = _db.Kategorije.FirstOrDefault(s => s.Kategorija == "Artikli");
+            if(artikli == null)
+            {
+                KategorijaArtikla kategorija = new KategorijaArtikla
+                {
+                    Kategorija = "Artikli",
+                    DateCreated = DateTime.Now,
+                    CreatedBy = "System"
+                };
+                _db.Kategorije.Add(kategorija);
+                _db.SaveChanges();
+                GenerateNodes();
+            }
         }
         private void CategoryWindow()
         {
@@ -97,20 +180,39 @@ namespace EtnaPOS.ViewModels
         }
         private void CreateNewCategory(string categoryName)
         {
-            
-            
-        if (SelectedItem is Product product)
-        {
-            product.Products.Add(new Product(Guid.NewGuid(), categoryName));
-                    
-        }
+            var kat = _db.Kategorije.SingleOrDefault(s => s.Kategorija == categoryName);
+            if(kat == null)
+            {
+                KategorijaArtikla kategorija = new KategorijaArtikla
+                {
+                    Kategorija = categoryName,
+                    DateCreated = DateTime.Now,
+                    CreatedBy = "System",
+                    ParentId = ((Node)SelectedItem).Id
 
-            Node.SaveNodes(Products);
+                };
+                _db.Kategorije.Add(kategorija);
+                _db.SaveChanges();
+                GenerateNodes();
+            }
+            else
+            {
+                var odgovor = MessageBox.Show("Kategorija sa ovim nazivom vec postoji!" +
+               " Da li zelite da nastavite sa dodavanjem nove kategorije?", "Obavestenje", MessageBoxButton.YesNo);
+                if (odgovor == MessageBoxResult.Yes)
+                {
+                    CategoryWindow();
+                }
+            }
+           
+            
+
         }
         public override void Dispose()
         {
             _ea.GetEvent<PassStringEventArgs>().Unsubscribe(CreateNewCategory);
             _ea.GetEvent<PassNewProductEventArgs>().Unsubscribe(CreateArticle);
+            _ea.GetEvent<EditedProductEventArgs>().Unsubscribe(EditArticle);
             base.Dispose();
         }
     }

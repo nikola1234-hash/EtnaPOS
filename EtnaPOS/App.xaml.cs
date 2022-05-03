@@ -35,15 +35,14 @@ namespace EtnaPOS
 
             var services = new ServiceCollection();
             services.AddLogging();
-            
+            services.AddSingleton<EtnaDbContext>();
             services.AddTransient<MainViewModel>();
             services.AddTransient<HomeViewModel>();
             services.AddSingleton<PosViewModel>();  
             services.AddSingleton<INavigationStore, NavigationStore>();
+            services.AddSingleton<ITreeViewNodeGenerator, TreeViewNodeGenerator>();
             services.AddSingleton<IViewFactory, ViewFactory>();
-            services.AddTransient<EtnaDbContext>();
             services.AddSingleton<IEventAggregator, EventAggregator>();
-            services.AddSingleton<IProductService, ProductService>();
             
 
 
@@ -54,22 +53,9 @@ namespace EtnaPOS
         {
             return (T?)ServiceProvider.GetService(typeof(T));
         }
-        private void ConfigureData()
-        {
-            string folder = "\\Data";
-            var doesExist = Directory.Exists(Directory.GetCurrentDirectory() + folder);
-            var fileExists = File.Exists(Directory.GetCurrentDirectory() + folder + "\\products.json");
-            if (!fileExists)
-                File.Create(Directory.GetCurrentDirectory() + folder + "\\products.json");
-            if (doesExist) return;
-            Directory.CreateDirectory(Directory.GetCurrentDirectory() + folder);
-
-
-        }
-    
+     
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            ConfigureData();
             ConfigureServices();
             var viewModel = ServiceProvider.GetRequiredService<MainViewModel>();
             MainWindow window = new MainWindow

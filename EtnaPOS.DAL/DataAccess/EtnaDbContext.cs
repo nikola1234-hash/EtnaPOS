@@ -10,5 +10,7 @@ namespace EtnaPOS.DAL.DataAccess
             
         }
         public DbSet<User>Users { get;set; }
+        public DbSet<Artikal> Artikli { get; set; }
+        public DbSet<KategorijaArtikla> Kategorije { get; set; }
     }
 }
