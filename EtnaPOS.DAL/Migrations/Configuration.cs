@@ -11,7 +11,7 @@
         {
             AutomaticMigrationsEnabled = false;
         }
-
+       
         protected override void Seed(EtnaPOS.DAL.DataAccess.EtnaDbContext context)
         {
             //  This method will be called after migrating to the latest version.

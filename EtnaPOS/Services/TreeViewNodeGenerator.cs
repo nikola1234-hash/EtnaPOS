@@ -23,7 +23,11 @@ namespace EtnaPOS.Services
                 else
                 {
                     var t = nodes.FirstOrDefault(s => s.Id == k.ParentId);
-                    t.Children.Add(new Node(k.Id, k.Kategorija, TypeNode.FolderClosed));
+                    if(t != null)
+                    {
+                        t.Children.Add(new Node(k.Id, k.Kategorija, TypeNode.FolderClosed));
+                    }
+                    
                 }
                 
             }
