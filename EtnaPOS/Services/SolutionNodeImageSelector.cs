@@ -19,9 +19,9 @@ namespace EtnaPOS.Services
         }
         public override ImageSource Select(TreeListRowData rowData)
         {
-           if(rowData.Row is Product)
+           if(rowData.Row is Node)
             {
-                    Product product = (Product)rowData.Row;
+                    Node product = (Node)rowData.Row;
                     if (product == null)
                     {
                         return null;
