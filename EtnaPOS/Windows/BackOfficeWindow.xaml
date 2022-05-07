@@ -49,8 +49,8 @@
                     <dxb:BarButtonItem Content="{Binding DataContext.AddArticleText, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type window:BackOfficeWindow}}}"
                                        Command="{Binding DataContext.NewArticleCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type window:BackOfficeWindow}}}" />
                     <dxb:BarButtonItem Content="Nova Kategorija" Command="{Binding DataContext.NewCategoryCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type window:BackOfficeWindow}}}" />
-                    <dxb:BarButtonItem Content="Deaktiviraj Artikal" />
-                    <dxb:BarButtonItem Content="Izbrisi Artikal" />
+                    <dxb:BarButtonItem IsEnabled="False" Content="Deaktiviraj Artikal" />
+                    <dxb:BarButtonItem IsEnabled="False" Content="Izbrisi Artikal" />
                    
                 </dxg:TreeViewControl.NodeMenuCustomizations>
                 <dxg:TreeViewControl.ChildNodesSelector>

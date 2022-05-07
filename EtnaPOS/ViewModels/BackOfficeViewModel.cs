@@ -100,6 +100,7 @@ namespace EtnaPOS.ViewModels
                 {
                     toUpdate.Price = item.Price;
                     toUpdate.Name = item.Name;
+                    toUpdate.KategorijaArtiklaId = item.KategorijaArtiklaId;
                     _db.SaveChanges();
                 }
             }
@@ -127,9 +128,10 @@ namespace EtnaPOS.ViewModels
                 {
                     var artikal = _db.Artikli.FirstOrDefault(s => s.Id == node.Id);
                     if (artikal is null) return;
+                    var kategorije = _db.Kategorije;
                     CreateProductWindow window = new CreateProductWindow
                     {
-                        DataContext = new ProductWindowViewModel(artikal)
+                        DataContext = new ProductWindowViewModel(artikal, kategorije)
                     };
                     window.ShowDialog();
                    

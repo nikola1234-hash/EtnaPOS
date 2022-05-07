@@ -17,6 +17,11 @@
             <TextBox Text="{Binding Name, Mode=TwoWay, 
                         UpdateSourceTrigger=PropertyChanged, 
                         Delay=250}"/>
+            <StackPanel Orientation="Vertical">
+                <Label IsEnabled="{Binding ShowDropbox}" Content="Kategorija:"></Label>
+                <ComboBox IsEnabled="{Binding ShowDropbox}" ItemsSource="{Binding ListaKategorija}" SelectedItem="{Binding SelectedItem}"  DisplayMemberPath="Kategorija"/>
+            </StackPanel>
+            
             <Label Content="Cena Artikla:"></Label>
             <TextBox Text="{Binding Price, Mode=TwoWay, 
                         UpdateSourceTrigger=PropertyChanged, 

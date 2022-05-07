@@ -5,6 +5,8 @@ using EtnaPOS.Events.EventAggregator;
 using EtnaPOS.Models;
 using Prism.Events;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Input;
 
 namespace EtnaPOS.ViewModels.WindowViewModels
@@ -26,6 +28,19 @@ namespace EtnaPOS.ViewModels.WindowViewModels
         }
         private decimal _price;
         public int KategorijaId { get; set; }
+        public List<KategorijaArtikla> ListaKategorija { get; set; }
+        private KategorijaArtikla selectedItem;
+        public KategorijaArtikla SelectedItem { 
+            get
+            {
+                return selectedItem;
+            }
+            set
+            {
+                selectedItem = value;
+                OnPropertyChanged();
+            }
+        }
         public decimal Price
         {
             get { return _price; }
@@ -35,14 +50,17 @@ namespace EtnaPOS.ViewModels.WindowViewModels
                 OnPropertyChanged();
             }
         }
+        public bool ShowDropbox { get; set; }
         public ICommand CreateCommand { get; set; }
-        public ProductWindowViewModel(Artikal artikal)
+        public ProductWindowViewModel(Artikal artikal, IEnumerable<KategorijaArtikla> listaKategorija)
         {
             Id = artikal.Id;
             Name = artikal.Name;
             Price = artikal.Price;
             KategorijaId = artikal.KategorijaArtiklaId;
             CreateCommand = new DelegateCommand(SaveEditedProduct);
+            ListaKategorija = listaKategorija.ToList();
+            ShowDropbox = ListaKategorija.Count > 0;
         }
 
         private void SaveEditedProduct()
@@ -52,7 +70,7 @@ namespace EtnaPOS.ViewModels.WindowViewModels
                 Id = Id,
                 Name = Name,
                 Price = (Decimal)Price,
-                KategorijaArtiklaId = KategorijaId
+                KategorijaArtiklaId = SelectedItem.Id
             };
             eventAggregator.GetEvent<EditedProductEventArgs>().Publish(artikal);
             WindowService.Close();
@@ -62,6 +80,7 @@ namespace EtnaPOS.ViewModels.WindowViewModels
         {
             KategorijaId = kategorijaId;
             CreateCommand = new DelegateCommand(CreateProduct);
+            ShowDropbox = false;
         }
         public void CreateProduct()
         {
