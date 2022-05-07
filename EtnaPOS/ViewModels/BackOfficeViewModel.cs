@@ -71,7 +71,6 @@ namespace EtnaPOS.ViewModels
             _ea.GetEvent<PassStringEventArgs>().Subscribe(CreateNewCategory);
             _ea.GetEvent<PassNewProductEventArgs>().Subscribe(CreateArticle);
             _ea.GetEvent<EditedProductEventArgs>().Subscribe(EditArticle);
-            logger.LogInformation("Backoffice logger test.");
         }
         private void GenerateNodes()
         {
