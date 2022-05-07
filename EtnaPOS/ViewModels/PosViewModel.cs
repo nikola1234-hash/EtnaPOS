@@ -1,9 +1,11 @@
 ﻿using DevExpress.Mvvm;
-using DevExpress.Mvvm.DataAnnotations;
+using EtnaPOS.DAL.DataAccess;
+using EtnaPOS.DAL.Models;
+using EtnaPOS.EtnaEventArgs;
 using EtnaPOS.Events.EventAggregator;
-using EtnaPOS.Models;
+using EtnaPOS.ViewModels.WindowViewModels;
+using EtnaPOS.Windows;
 using Prism.Events;
-using System;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -12,7 +14,7 @@ namespace EtnaPOS.ViewModels
     public class PosViewModel : BaseViewModel
     {
         private bool _isVisible;
-
+        private EtnaDbContext db => App.GetService<EtnaDbContext>();
         public bool IsVisible
         {
             get { return _isVisible; }
@@ -23,19 +25,9 @@ namespace EtnaPOS.ViewModels
                 OnPropertyChanged();
             }
         }
+     
 
-        private bool _allowDrop;
 
-        public bool AllowDrop
-        {
-            get { return _allowDrop; }
-            set 
-            { 
-                _allowDrop = value;
-                OnPropertyChanged();
-                
-            }
-        }
         private ObservableCollection<Table> _tables;
 
         public ObservableCollection<Table> Tables
@@ -49,31 +41,61 @@ namespace EtnaPOS.ViewModels
         }
         private readonly IEventAggregator _ea;
         public ICommand NewTableCommand { get; set; }
-        
+        private void LoadTables()
+        {
+            if(Tables != null)
+            {
+                Tables.Clear();
+            }
+            var tables = db.Tables;
+            if(tables != null)
+            {
+                Tables = new ObservableCollection<Table>(tables);
+            }
+            OnPropertyChanged(nameof(Tables));
+        }
         public PosViewModel(IEventAggregator ea)
         {
-            Tables = new ObservableCollection<Table>(); 
-            Tables.Add(new Table("Hello World"));
+            LoadTables();
+
             NewTableCommand = new DelegateCommand(CreateNewTable);
             _ea = ea;
             _ea.GetEvent<ManageTableKey>().Subscribe(ManageTables);
+            _ea.GetEvent<PassObjectEvent>().Subscribe(AddNewTable);
+            
+        }
+
+     
+
+        private void AddNewTable(object obj)
+        {
+            if (obj is Table table && table != null)
+            {
+                db.Tables.Add(table);
+                db.SaveChanges();
+                LoadTables();
+            }
             
         }
 
         private void CreateNewTable()
         {
-           
+            // Using this as generic single add item window
+            CreateCategoryWindow window = new CreateCategoryWindow
+            {
+                DataContext = new AddTableViewModel()
+            };
+            window.ShowDialog();
         }
 
         private void ManageTables()
         {
             IsVisible = !IsVisible;
             OnPropertyChanged(nameof(IsVisible));
-            AllowDrop = !AllowDrop;
-            OnPropertyChanged(nameof(AllowDrop));
         }
         public override void Dispose()
         {
+            _ea.GetEvent<PassObjectEvent>().Unsubscribe(AddNewTable);
             _ea.GetEvent<ManageTableKey>().Unsubscribe(ManageTables);
             base.Dispose();
         }

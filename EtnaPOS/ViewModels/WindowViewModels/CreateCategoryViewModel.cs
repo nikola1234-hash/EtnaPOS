@@ -13,6 +13,8 @@ namespace EtnaPOS.ViewModels.WindowViewModels
         private ICurrentWindowService CurrentWindowService => GetService<ICurrentWindowService>();
         private IEventAggregator _ea => App.GetService<IEventAggregator>();
 
+        public string Label => "Naziv kategorije: ";
+
         private string _categoryName;
 
         public string CategoryName

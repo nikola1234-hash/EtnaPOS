@@ -17,7 +17,7 @@
     </dx:ThemedWindow.DataContext>
     <Grid>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Label Content="Naziv kategorije:"/>
+            <Label Content="{Binding Label}"/>
             <TextBox Width="120" Text="{Binding CategoryName}"/>
             <Button Command="{Binding SubmitCommand}"  Content="Ok"/>
         </StackPanel>

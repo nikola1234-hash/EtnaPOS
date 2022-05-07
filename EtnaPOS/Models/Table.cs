@@ -13,94 +13,27 @@ namespace EtnaPOS.Models
     public class Table : BaseModel
     {
         private IEventAggregator _ea => App.GetService<IEventAggregator>();
-        
-        public Guid Id { get; set; }
-        private string _tableName;
 
-        public string TableName
+        public string TableName { get; set; }
+        public int Id { get; set; }
+        private SolidColorBrush _buttonBackground;
+
+        public SolidColorBrush ButtonBackground
         {
-            get { return _tableName; }
+            get { return _buttonBackground; }
             set
             {
-                _tableName = value;
+                _buttonBackground = value;
                 OnPropertyChanged();
             }
         }
-        private double _top;
-
-        public double Top
-        {
-            get { return _top; }
-            set
-            { 
-                _top = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private double _left;
-
-        public double Left
-        {
-            get { return _left; }
-            set
-            {
-                _left = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private Rectangle _rectangle;
-
-        public Rectangle Rectangle
-        {
-            get { return _rectangle; }
-            set 
-            { 
-                _rectangle = value;
-                OnPropertyChanged(nameof(Rectangle));
-            }
-        }
-
-
-        DragBehavior dragBehavior { get; set; }
         public Table(string tableName)
         {
-            Rectangle = new Rectangle();
-            Id = Guid.NewGuid();
             TableName = tableName;
-            Rectangle.Fill = new SolidColorBrush(Color.FromRgb(50, 205, 50));
-            Rectangle.Width = 100;
-            Rectangle.Height = 100;
-            Top = 50;
-            Left = 50;
-            _ea.GetEvent<TablePositionEvent>().Subscribe(Instance_PositionChanged);
-            var dbglistener = new TextWriterTraceListener(Console.Out);
-            
-
         }
 
-        private void Instance_PositionChanged(TranslateTransform e)
-        {
-            if(Top != e.Y)
-            {
-                Top = e.Y;
-                OnPropertyChanged(nameof(Top));
-            }
-            if(Left != e.X)
-            {
-                Left = e.X;
-                OnPropertyChanged(nameof(Left));
-            }
-            
-            Debug.WriteLine("PositionChanged");
-            Debug.WriteLine("Top: " + Top + " " + Left);
-        }
-
-       
         public override void Dispose()
         {
-            _ea.GetEvent<TablePositionEvent>().Unsubscribe(Instance_PositionChanged);
             base.Dispose();
         }
     }

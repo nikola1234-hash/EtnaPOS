@@ -35,6 +35,7 @@
     <Folder Include="Images\TreeViewImages\" />
     <Folder Include="DTO\" />
     <Folder Include="Data\" />
+    <Folder Include="Reports\" />
     <Folder Include="ViewModels\Dialogs\" />
   </ItemGroup>
 

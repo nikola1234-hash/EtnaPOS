@@ -28,41 +28,49 @@
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <dx:SimpleButton Grid.Column="0" Height="50" Content="Novi sto" />
+                <dx:SimpleButton Grid.Column="0" Height="50" Content="Novi sto" Command="{Binding NewTableCommand}" />
                 
             </Grid>
             
         </dxlc:LayoutControl>
-   
-        <ItemsControl Focusable="True" Grid.Row="1" ItemsSource="{Binding Tables}">
-            
-            <ItemsControl.Resources>
-                <DataTemplate DataType="{x:Type models:Table}">
-                    <Border Background="{Binding Rectangle.Fill, Mode=TwoWay}" BorderBrush="Black" BorderThickness="1" local1:DragBehavior.Drag="{Binding DataContext.AllowDrop, RelativeSource={RelativeSource AncestorLevel=1, AncestorType={x:Type local:PosView}}}">
-                        <Grid>
-                            <Rectangle Margin="10 0" Canvas.Top="{Binding Top, Mode=TwoWay}" Canvas.Left="{Binding Left, Mode=TwoWay}" Width="{Binding Rectangle.Width}" Height="{Binding Rectangle.Height}" Fill="{Binding Rectangle.Fill}"/>
-                            <TextBlock Margin="0 0" VerticalAlignment="Center" Foreground="Black" HorizontalAlignment="Center" Text="{Binding TableName}" FontSize="16" FontWeight="DemiBold"/>
-                        </Grid>
-                    </Border>
 
-
-                </DataTemplate>
-
-            </ItemsControl.Resources>
-
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding Tables}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas Background="Transparent"/>
+                    <UniformGrid  Height="Auto" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemContainerStyle>
-                <Style TargetType="{x:Type ContentPresenter}">
-                    <Setter Property="Canvas.Top" Value="{Binding Top, Mode=TwoWay}" />
-                    <Setter Property="Canvas.Left" Value="{Binding Left, Mode=TwoWay}" />
-
-                </Style>
-            </ItemsControl.ItemContainerStyle>
-         
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="10">
+                        <Button
+                            Width="100"
+                            Height="100"
+                            Margin="5"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Background="LightGreen">
+                            <!--<Button.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Command="{Binding EditCommand}" Header="Izmeni" />
+                                    <MenuItem Command="{Binding DeleteCommand}" Header="Izbrisi sobu" />
+                                </ContextMenu>
+                            </Button.ContextMenu>-->
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock
+                                    Width="auto"
+                                    Height="auto"
+                                    HorizontalAlignment="Center"
+                                    FontSize="24"
+                                    FontWeight="Bold"
+                                    Foreground="Black"
+                                    Text="{Binding TableName}" />
+                              
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
         </ItemsControl>
     </Grid>
 
