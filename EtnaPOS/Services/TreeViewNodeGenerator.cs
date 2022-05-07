@@ -1,5 +1,6 @@
 ﻿using EtnaPOS.DAL.DataAccess;
 using EtnaPOS.Models;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -22,7 +23,7 @@ namespace EtnaPOS.Services
                 }
                 else
                 {
-                    var t = nodes.FirstOrDefault(s => s.Id == k.ParentId);
+                    var t = Collect(nodes).FirstOrDefault(s => s.Id == k.ParentId);
                     if(t != null)
                     {
                         t.Children.Add(new Node(k.Id, k.Kategorija, TypeNode.FolderClosed));
@@ -31,7 +32,7 @@ namespace EtnaPOS.Services
                 }
                 
             }
-            foreach (var node in nodes)
+            foreach (var node in Collect(nodes))
             {
                 var c = artikli.Where(s => s.KategorijaArtiklaId == node.Id).ToList();
 
@@ -42,6 +43,16 @@ namespace EtnaPOS.Services
                 }
             }
             return nodes;
+        }
+        private IEnumerable<Node> Collect(IEnumerable<Node> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                yield return node;
+                foreach (var child in Collect(node.Children))
+                    yield return child;
+            }
+                
         }
     }
 }

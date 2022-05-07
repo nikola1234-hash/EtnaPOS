@@ -24,9 +24,9 @@ namespace EtnaPOS.ViewModels.WindowViewModels
                 OnPropertyChanged();
             }
         }
-        private double _price;
+        private decimal _price;
         public int KategorijaId { get; set; }
-        public double Price
+        public decimal Price
         {
             get { return _price; }
             set 
@@ -51,7 +51,7 @@ namespace EtnaPOS.ViewModels.WindowViewModels
             {
                 Id = Id,
                 Name = Name,
-                Price = Price,
+                Price = (Decimal)Price,
                 KategorijaArtiklaId = KategorijaId
             };
             eventAggregator.GetEvent<EditedProductEventArgs>().Publish(artikal);
@@ -65,7 +65,15 @@ namespace EtnaPOS.ViewModels.WindowViewModels
         }
         public void CreateProduct()
         {
-            Artikal artikal = new Artikal(Name, Price, KategorijaId);
+            Artikal artikal = new Artikal
+            {
+                Name = Name,
+                Price = (Decimal)Price,
+                DateCreated = DateTime.Now,
+                CreatedBy = "System",
+                KategorijaArtiklaId = KategorijaId,
+                IsActive = true
+            };
             eventAggregator.GetEvent<PassNewProductEventArgs>().Publish(artikal);
             WindowService.Close();
         }

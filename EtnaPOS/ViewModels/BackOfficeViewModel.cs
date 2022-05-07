@@ -7,6 +7,7 @@ using EtnaPOS.Models;
 using EtnaPOS.Services;
 using EtnaPOS.ViewModels.WindowViewModels;
 using EtnaPOS.Windows;
+using Microsoft.Extensions.Logging;
 using Prism.Events;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,7 @@ namespace EtnaPOS.ViewModels
             }
         }
 
+        private ILogger<BackOfficeViewModel> logger => App.GetService<ILogger<BackOfficeViewModel>>();  
         public object SelectedItem
         {
             get { return _selectedItem; }
@@ -69,6 +71,7 @@ namespace EtnaPOS.ViewModels
             _ea.GetEvent<PassStringEventArgs>().Subscribe(CreateNewCategory);
             _ea.GetEvent<PassNewProductEventArgs>().Subscribe(CreateArticle);
             _ea.GetEvent<EditedProductEventArgs>().Subscribe(EditArticle);
+            logger.LogInformation("Backoffice logger test.");
         }
         private void GenerateNodes()
         {
@@ -81,6 +84,7 @@ namespace EtnaPOS.ViewModels
                 TreeNodes.Clear();
                 TreeNodes = _treeViewNodeGenerator.GenerateNodes();
             }
+            OnPropertyChanged(nameof(TreeNodes));
         }
         private void DeleteArticle()
         {
@@ -102,7 +106,7 @@ namespace EtnaPOS.ViewModels
             }
             catch(Exception ex)
             {
-
+                logger.LogError("Edit article threw an exception. Ex. Message: " + ex.Message, ex);
             }
             GenerateNodes();
         }
@@ -120,14 +124,17 @@ namespace EtnaPOS.ViewModels
                     };
                     window.ShowDialog();
                 }
-                else
+                else if(node.Type == TypeNode.Active || node.Type == TypeNode.NotActive)
                 {
                     var artikal = _db.Artikli.FirstOrDefault(s => s.Id == node.Id);
+                    if (artikal is null) return;
                     CreateProductWindow window = new CreateProductWindow
                     {
                         DataContext = new ProductWindowViewModel(artikal)
                     };
                     window.ShowDialog();
+                   
+                   
                 }
                 GenerateNodes();
              
