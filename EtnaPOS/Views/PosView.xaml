@@ -8,6 +8,7 @@
              xmlns:local1="clr-namespace:EtnaPOS.Behaviours" 
              xmlns:models="clr-namespace:EtnaPOS.Models"
              xmlns:viewModels="clr-namespace:EtnaPOS.ViewModels" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"  x:Class="EtnaPOS.Views.PosView"
+             xmlns:view="clr-namespace:EtnaPOS.Views"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              >
@@ -49,7 +50,9 @@
                             Margin="5"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            Background="LightGreen">
+                            Background="LightGreen"
+                            Command="{Binding DataContext.OpenTableCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:PosView}}}"
+                            CommandParameter="{Binding Id}">
                             <!--<Button.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Command="{Binding EditCommand}" Header="Izmeni" />

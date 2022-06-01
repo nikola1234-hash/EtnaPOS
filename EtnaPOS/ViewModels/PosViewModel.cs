@@ -6,7 +6,9 @@ using EtnaPOS.Events.EventAggregator;
 using EtnaPOS.ViewModels.WindowViewModels;
 using EtnaPOS.Windows;
 using Prism.Events;
+using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 
 namespace EtnaPOS.ViewModels
@@ -41,6 +43,7 @@ namespace EtnaPOS.ViewModels
         }
         private readonly IEventAggregator _ea;
         public ICommand NewTableCommand { get; set; }
+        public ICommand<int> OpenTableCommand { get; set; }
         private void LoadTables()
         {
             if(Tables != null)
@@ -57,7 +60,7 @@ namespace EtnaPOS.ViewModels
         public PosViewModel(IEventAggregator ea)
         {
             LoadTables();
-
+            OpenTableCommand = new DelegateCommand<int>(OpenTableWindow);
             NewTableCommand = new DelegateCommand(CreateNewTable);
             _ea = ea;
             _ea.GetEvent<ManageTableKey>().Subscribe(ManageTables);
@@ -65,7 +68,14 @@ namespace EtnaPOS.ViewModels
             
         }
 
-     
+        private void OpenTableWindow(int id)
+        {
+            if(_tables.Any(s=> s.Id == id))
+            {
+                
+
+            }
+        }
 
         private void AddNewTable(object obj)
         {
