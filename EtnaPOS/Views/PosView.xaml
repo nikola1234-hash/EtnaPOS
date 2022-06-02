@@ -38,7 +38,7 @@
         <ItemsControl Grid.Row="1" ItemsSource="{Binding Tables}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid  Height="Auto" />
+                    <UniformGrid Height="Auto" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>

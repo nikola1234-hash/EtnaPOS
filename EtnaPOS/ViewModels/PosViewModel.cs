@@ -60,8 +60,10 @@ namespace EtnaPOS.ViewModels
         public PosViewModel(IEventAggregator ea)
         {
             LoadTables();
+
             OpenTableCommand = new DelegateCommand<int>(OpenTableWindow);
             NewTableCommand = new DelegateCommand(CreateNewTable);
+
             _ea = ea;
             _ea.GetEvent<ManageTableKey>().Subscribe(ManageTables);
             _ea.GetEvent<PassObjectEvent>().Subscribe(AddNewTable);
@@ -72,8 +74,11 @@ namespace EtnaPOS.ViewModels
         {
             if(_tables.Any(s=> s.Id == id))
             {
-                
-
+                var window = new KasaWindow()
+                {
+                    DataContext = new KasaViewModel(id)
+                };
+                window.ShowDialog();
             }
         }
 

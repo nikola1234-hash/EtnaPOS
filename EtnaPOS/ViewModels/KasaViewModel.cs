@@ -12,6 +12,7 @@ namespace EtnaPOS.ViewModels
     public class KasaViewModel : BaseViewModel
     {
         private int tableId { get; }
+        public string TableNumber { get;}
         private EtnaDbContext db => App.GetService<EtnaDbContext>();
 
         private ObservableCollection<ArtikalKorpaViewModel> _korpa;
@@ -34,6 +35,19 @@ namespace EtnaPOS.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        private ObservableCollection<KategorijaArtikla> _listaKategorija;
+
+        public ObservableCollection<KategorijaArtikla> ListaKategorija
+        {
+            get { return _listaKategorija; }
+            set
+            {
+                _listaKategorija = value;
+                OnPropertyChanged();
+            }
+        }
+       
         public ICommand AddCommand { get; }
         public ICommand RemoveCommand { get; }
 
@@ -52,6 +66,10 @@ namespace EtnaPOS.ViewModels
         public KasaViewModel(int tableId)
         {
             this.tableId = tableId;
+            TableNumber = "Sto: " + db.Tables.Find(tableId).TableName;
+            ListaKategorija = db.Kategorije.ToObservableCollection();
+            var artikli = ListaKategorija.FirstOrDefault(s => s.Kategorija == "Artikli");
+            ListaKategorija.Remove(artikli);
 
             RemoveCommand = new DelegateCommand(RemoveArtikalFromList);
             AddCommand = new DelegateCommand(AddArtikalToList);
@@ -72,10 +90,13 @@ namespace EtnaPOS.ViewModels
                 }
                 else
                 {
-                    Korpa.Add(new ArtikalKorpaViewModel(artikal, 0));
+                    Korpa.Add(new ArtikalKorpaViewModel(artikal, 1));
                 }
             }
         }
+
+
+
 
         protected void RemoveArtikalFromList()
         {
@@ -94,7 +115,7 @@ namespace EtnaPOS.ViewModels
                 }
             }
         }
-        private void InitializeArticles()
+        protected void InitializeArticles()
         {
             if (Artikli == null)
             {
