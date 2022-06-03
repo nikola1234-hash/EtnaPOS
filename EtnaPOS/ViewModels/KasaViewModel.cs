@@ -6,6 +6,7 @@ using DevExpress.Mvvm;
 using DevExpress.Mvvm.Native;
 using EtnaPOS.DAL.DataAccess;
 using EtnaPOS.Models;
+using EtnaPOS.Services;
 
 namespace EtnaPOS.ViewModels
 {
@@ -14,7 +15,6 @@ namespace EtnaPOS.ViewModels
         private int tableId { get; }
         public string TableNumber { get;}
         private EtnaDbContext db => App.GetService<EtnaDbContext>();
-
         private ObservableCollection<ArtikalKorpaViewModel> _korpa;
         public ObservableCollection<ArtikalKorpaViewModel> Korpa
         {
@@ -36,19 +36,20 @@ namespace EtnaPOS.ViewModels
             }
         }
 
-        private ObservableCollection<KategorijaArtikla> _listaKategorija;
+        private string _searchText;
 
-        public ObservableCollection<KategorijaArtikla> ListaKategorija
+        public string SearchText
         {
-            get { return _listaKategorija; }
+            get { return _searchText; }
             set
             {
-                _listaKategorija = value;
-                OnPropertyChanged();
+                _searchText = value;
+                OnPropertyChanged(nameof(SearchText));
             }
         }
-       
-        public ICommand AddCommand { get; }
+        
+
+        public ICommand DoubleClickCommand { get; }
         public ICommand RemoveCommand { get; }
 
         private object _selectedItem;
@@ -63,54 +64,68 @@ namespace EtnaPOS.ViewModels
             }
         }
 
+        private decimal _totalPrice;
+
+        public decimal TotalPrice
+        {
+            get { return _totalPrice; }
+            set
+            {
+                _totalPrice = value;
+                OnPropertyChanged();
+            }
+        }
         public KasaViewModel(int tableId)
         {
             this.tableId = tableId;
             TableNumber = "Sto: " + db.Tables.Find(tableId).TableName;
-            ListaKategorija = db.Kategorije.ToObservableCollection();
-            var artikli = ListaKategorija.FirstOrDefault(s => s.Kategorija == "Artikli");
-            ListaKategorija.Remove(artikli);
 
+            DoubleClickCommand = new DelegateCommand(AddArtikalToList);
             RemoveCommand = new DelegateCommand(RemoveArtikalFromList);
-            AddCommand = new DelegateCommand(AddArtikalToList);
 
             Korpa = new ObservableCollection<ArtikalKorpaViewModel>();
-
             InitializeArticles();
 
         }
 
+        private void CalculateTotalPrice()
+        {
+            TotalPrice = Korpa.Sum(x => x.TotalPrice);
+        }
         protected void AddArtikalToList()
         {
-            if(SelectedItem != null && SelectedItem is Artikal artikal)
+            if(SelectedItem is Artikal artikal)
             {
                 if (Korpa.FirstOrDefault(s => s.Artikal == artikal) != null)
                 {
                     Korpa.FirstOrDefault(s => s.Artikal == artikal)!.Count += 1;
+                    CalculateTotalPrice();
                 }
                 else
                 {
                     Korpa.Add(new ArtikalKorpaViewModel(artikal, 1));
+                    CalculateTotalPrice();
+
                 }
             }
         }
 
 
-
-
         protected void RemoveArtikalFromList()
         {
-            if (SelectedItem != null && SelectedItem is ArtikalKorpaViewModel artikal)
+            if (SelectedItem is ArtikalKorpaViewModel artikal)
             {
                 if (Korpa.Contains((artikal)))
                 {
                     if (Korpa.FirstOrDefault(s => s.Artikal.Id == artikal.Artikal.Id)!.Count > 1)
                     {
                         Korpa.FirstOrDefault(s => s.Artikal.Id == artikal.Artikal.Id)!.Count -= 1;
+                        CalculateTotalPrice();
                     }
                     else if(Korpa.FirstOrDefault(s => s.Artikal.Id == artikal.Artikal.Id)!.Count == 1)
                     {
                         Korpa.Remove(artikal);
+                        CalculateTotalPrice();
                     }
                 }
             }
@@ -125,7 +140,13 @@ namespace EtnaPOS.ViewModels
             {
                 Artikli.Clear();
             }
-            Artikli = db.Artikli.ToObservableCollection();
+            Artikli = db.Artikli.Where(s=>s.IsActive).ToObservableCollection();
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            
         }
     }
 }

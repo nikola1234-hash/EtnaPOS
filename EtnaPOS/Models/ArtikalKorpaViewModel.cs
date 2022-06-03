@@ -13,11 +13,15 @@ namespace EtnaPOS.Models
             get { return _count; }
             set
             {
+
                 _count = value;
+                TotalPrice = Count * Artikal.Price;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(TotalPrice));
             }
         }
 
+        public decimal TotalPrice { get; set; }
         public ArtikalKorpaViewModel(Artikal artikal, int count)
         {
             Artikal = artikal;

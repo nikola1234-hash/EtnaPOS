@@ -1,20 +1,26 @@
 ﻿<dx:ThemedWindow
-    x:Class="EtnaPOS.Windows.KasaWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
     xmlns:viewModels="clr-namespace:EtnaPOS.ViewModels"
     xmlns:windows="clr-namespace:EtnaPOS.Windows"
 
+    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+    x:Class="EtnaPOS.Windows.KasaWindow"
+
     Title="{Binding TableNumber}" Height="800" Width="1000"
     >
     <dx:ThemedWindow.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </dx:ThemedWindow.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:EventToCommand EventName="MouseDoubleClick" Command="{Binding DoubleClickCommand}"/>
+    </dxmvvm:Interaction.Behaviors>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Height="90" Width="Auto" Background="LightGray">
             <Grid.ColumnDefinitions>
@@ -82,7 +88,7 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                        
+
             </StackPanel>
             <StackPanel Margin="100 0 10 0" Grid.Column="1" Orientation="Horizontal">
                 <Button Foreground="White" FontSize="18"
@@ -186,47 +192,62 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ListView Margin="0 5 0 0" Grid.Column="0" Width="300"></ListView>
-            <ItemsControl Grid.Column="1" ItemsSource="{Binding ListaKategorija}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid VerticalAlignment="Top"  Height="Auto" >
-                          
-                        </UniformGrid>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Margin="10">
-                            <Button
-                                        Width="100"
-                                        Height="100"
-                                        Margin="5"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Background="LightBlue">
-                                <!--<Button.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Command="{Binding EditCommand}" Header="Izmeni" />
-                                    <MenuItem Command="{Binding DeleteCommand}" Header="Izbrisi sobu" />
-                                </ContextMenu>
-                            </Button.ContextMenu>-->
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock
-                                    Width="auto"
-                                    Height="auto"
-                                    HorizontalAlignment="Center"
-                                    FontSize="24"
-                                    FontWeight="Bold"
-                                    Foreground="Black"
-                                    Text="{Binding Kategorija}" />
+            <ListView 
+                Margin="0 5 0 0" 
+                Grid.Column="0" Width="300"
+                ItemsSource="{Binding Korpa}"
+                SelectedItem="{Binding SelectedItem}">
+                <ListView.View>
 
-                                </StackPanel>
-                            </Button>
-                        </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                    <GridView
+                        ColumnHeaderToolTip="Artikli">
+
+                        <GridViewColumn DisplayMemberBinding=
+                                        "{Binding Artikal.Name}" 
+                                        Header="Naziv Artikla" Width="100"/>
+
+
+                        <GridViewColumn DisplayMemberBinding=
+                                        "{Binding Count}" 
+                                        Header="Kolicina" Width="100"/>
+                        <GridViewColumn DisplayMemberBinding=
+                                        "{Binding TotalPrice}" 
+                                        Header="Cena" Width="100"/>
+                    </GridView>
+
+                </ListView.View>
+            </ListView>
+            <StackPanel Margin="5" Orientation="Vertical" Grid.Column="1">
+                <Label Content="Pretraga Artikla" FontSize="18"/>
+                <TextBox Text="{Binding SearchText}"/>
+                <ListView 
+                    Margin="0 5 0 0" 
+                    Width="auto"
+                    ItemsSource="{Binding Artikli}"
+                    SelectedItem="{Binding SelectedItem}">
+                    <ListView.View>
+
+                        <GridView
+                                  ColumnHeaderToolTip="Artikli">
+
+                            <GridViewColumn DisplayMemberBinding=
+                                            "{Binding Name}"
+                                            Header="Naziv Artikla" Width="100"/>
+
+
+                            <GridViewColumn DisplayMemberBinding=
+                                            "{Binding Price}" 
+                                            Header="Cena" Width="100"/>
+                        </GridView>
+
+                    </ListView.View>
+                </ListView>
+            </StackPanel>
+
         </Grid>
+        <StackPanel HorizontalAlignment="Left" Margin="5" Grid.Row="2" Orientation="Horizontal">
+            <Label Content="Total:" FontSize="18" FontWeight="Bold" Margin="10 0"></Label>
+            <TextBox IsReadOnly="True" FontSize="18" FontStretch="Expanded" Text="{Binding TotalPrice}" Width="200"></TextBox>
+        </StackPanel>
     </Grid>
 </dx:ThemedWindow>
