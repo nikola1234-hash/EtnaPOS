@@ -14,7 +14,7 @@ namespace EtnaPOS.ViewModels
     {
         private int tableId { get; }
         public string TableNumber { get;}
-        private EtnaDbContext db => App.GetService<EtnaDbContext>();
+        private EtnaDbContext db => App.GetService<EtnaDbContext>()!;
         private ObservableCollection<ArtikalKorpaViewModel> _korpa;
         public ObservableCollection<ArtikalKorpaViewModel> Korpa
         {
@@ -47,7 +47,18 @@ namespace EtnaPOS.ViewModels
                 OnPropertyChanged(nameof(SearchText));
             }
         }
-        
+
+        private bool _canDelete;
+
+        public bool CanDelete
+        {
+            get { return _canDelete; }
+            set
+            {
+                _canDelete = value;
+                OnPropertyChanged();
+            }
+        }
 
         public ICommand DoubleClickCommand { get; }
         public ICommand RemoveCommand { get; }
@@ -59,6 +70,14 @@ namespace EtnaPOS.ViewModels
             get { return _selectedItem; }
             set
             {
+                if (value is ArtikalKorpaViewModel)
+                {
+                    CanDelete = true;
+                }
+                else
+                {
+                    CanDelete = false;
+                }
                 _selectedItem = value;
                 OnPropertyChanged(nameof(SelectedItem));
             }
@@ -78,7 +97,7 @@ namespace EtnaPOS.ViewModels
         public KasaViewModel(int tableId)
         {
             this.tableId = tableId;
-            TableNumber = "Sto: " + db.Tables.Find(tableId).TableName;
+            TableNumber = "Sto: " + db.Tables.Find(tableId)!.TableName;
 
             DoubleClickCommand = new DelegateCommand(AddArtikalToList);
             RemoveCommand = new DelegateCommand(RemoveArtikalFromList);
