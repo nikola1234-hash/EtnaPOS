@@ -8,14 +8,15 @@
     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
     x:Class="EtnaPOS.Windows.KasaWindow"
 
-    Title="{Binding TableNumber}" Height="800" Width="1000"
+    Title="{Binding TableNumber}" Height="800" Width="1000" WindowState="Maximized" WindowStartupLocation="CenterScreen"
     >
     <dx:ThemedWindow.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </dx:ThemedWindow.Resources>
     <dxmvvm:Interaction.Behaviors>
-        <dxmvvm:EventToCommand EventName="MouseDoubleClick" Command="{Binding DoubleClickCommand}"/>
+        <dxmvvm:CurrentWindowService/>
     </dxmvvm:Interaction.Behaviors>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -96,7 +97,7 @@
                         BorderThickness="2"
                         Height="70"
                         Content="Medju racun" 
-                        Command="{Binding FinishCommand}"
+                        Command="{Binding CheckOutCommand}"
                         Padding="20"
                         Width="Auto">
                     <Button.Style>
@@ -127,6 +128,7 @@
                         BorderThickness="2"
                         Height="70"
                         Content="Naplata" 
+                        IsEnabled="{Binding CanCloseOrder}"
                         Width="Auto">
                     <Button.Style>
                         <Style TargetType="{x:Type Button}">
@@ -218,13 +220,16 @@
             </ListView>
             <StackPanel Margin="5" Orientation="Vertical" Grid.Column="1" Height="Auto">
                 <Label Content="Pretraga Artikla" FontSize="18"/>
-                <TextBox Text="{Binding SearchText}"/>
+                <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay= 200}"/>
                 <ListView 
                     FontSize="14"
                     Margin="0 5 0 0" 
                     Width="auto"
                     ItemsSource="{Binding Artikli}"
                     SelectedItem="{Binding SelectedItem}">
+                    <dxmvvm:Interaction.Behaviors>
+                        <dxmvvm:EventToCommand EventName="MouseDoubleClick" Command="{Binding DoubleClickCommand}"/>
+                    </dxmvvm:Interaction.Behaviors>
                     <ListView.View>
 
                         <GridView
@@ -232,12 +237,12 @@
 
                             <GridViewColumn DisplayMemberBinding=
                                             "{Binding Name}"
-                                            Header="Naziv Artikla" Width="100"/>
+                                            Header="Naziv Artikla" Width="300"/>
 
 
                             <GridViewColumn DisplayMemberBinding=
                                             "{Binding Price}" 
-                                            Header="Cena" Width="100"/>
+                                            Header="Cena" Width="150"/>
                         </GridView>
 
                     </ListView.View>

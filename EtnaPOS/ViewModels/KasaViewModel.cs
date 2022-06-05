@@ -1,9 +1,14 @@
-﻿using EtnaPOS.DAL.Models;
+﻿using System;
+using System.Collections.Generic;
+using EtnaPOS.DAL.Models;
 using System.Collections.ObjectModel;
+using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Windows.Input;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.Native;
+using DevExpress.Xpf.Core.Native;
 using EtnaPOS.DAL.DataAccess;
 using EtnaPOS.Models;
 using EtnaPOS.Services;
@@ -13,25 +18,40 @@ namespace EtnaPOS.ViewModels
     public class KasaViewModel : BaseViewModel
     {
         private int tableId { get; }
-        public string TableNumber { get;}
+        public string TableNumber { get; }
         private EtnaDbContext db => App.GetService<EtnaDbContext>()!;
         private ObservableCollection<ArtikalKorpaViewModel> _korpa;
+
         public ObservableCollection<ArtikalKorpaViewModel> Korpa
         {
             get { return _korpa; }
-            set 
-            { 
+            set
+            {
                 _korpa = value;
                 OnPropertyChanged();
             }
         }
+
         private ObservableCollection<Artikal> _artikli;
+
         public ObservableCollection<Artikal> Artikli
         {
             get { return _artikli; }
             set
             {
                 _artikli = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ObservableCollection<Artikal> _artikliCache;
+
+        public ObservableCollection<Artikal> ArtiklCache
+        {
+            get { return _artikliCache; }
+            set
+            {
+                _artikliCache = value;
                 OnPropertyChanged();
             }
         }
@@ -43,8 +63,16 @@ namespace EtnaPOS.ViewModels
             get { return _searchText; }
             set
             {
-                _searchText = value;
-                OnPropertyChanged(nameof(SearchText));
+                if (_searchText != value)
+                {
+                    _searchText = value;
+                    Artikli = ArtiklCache.Where(s => s.Name.ToLower().Contains(value.ToLower()))
+                        .ToObservableCollection();
+
+                    OnPropertyChanged(nameof(Artikli));
+                    OnPropertyChanged(nameof(SearchText));
+                }
+
             }
         }
 
@@ -55,13 +83,29 @@ namespace EtnaPOS.ViewModels
             get { return _canDelete; }
             set
             {
+
                 _canDelete = value;
                 OnPropertyChanged();
             }
         }
 
+        private bool _canCloseOrder;
+
+        public bool CanCloseOrder
+        {
+            get { return _canCloseOrder; }
+            set
+            {
+                _canCloseOrder = value;
+                OnPropertyChanged(nameof(CanCloseOrder));
+            }
+        }
+
+        private ICurrentWindowService _currentWindowService => GetService<ICurrentWindowService>();
         public ICommand DoubleClickCommand { get; }
         public ICommand RemoveCommand { get; }
+        public ICommand CheckOutCommand { get; }
+        public ICommand ExitCommand { get; }
 
         private object _selectedItem;
 
@@ -78,6 +122,7 @@ namespace EtnaPOS.ViewModels
                 {
                     CanDelete = false;
                 }
+
                 _selectedItem = value;
                 OnPropertyChanged(nameof(SelectedItem));
             }
@@ -94,19 +139,181 @@ namespace EtnaPOS.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        private Order _orderToRemove;
+
+        public Order OrderToRemove
+        {
+            get { return _orderToRemove; }
+            set
+            {
+                _orderToRemove = value;
+                OnPropertyChanged();
+            }
+        }
+
         public KasaViewModel(int tableId)
         {
             this.tableId = tableId;
+
             TableNumber = "Sto: " + db.Tables.Find(tableId)!.TableName;
 
             DoubleClickCommand = new DelegateCommand(AddArtikalToList);
             RemoveCommand = new DelegateCommand(RemoveArtikalFromList);
 
+            CheckOutCommand = new DelegateCommand(OrderCheckOut);
+            ExitCommand = new DelegateCommand(CloseWindow);
+
             Korpa = new ObservableCollection<ArtikalKorpaViewModel>();
+            Korpa.CollectionChanged += Korpa_CollectionChanged;
+
+            InitializeBasket(tableId);
+
             InitializeArticles();
 
         }
 
+        private void InitializeBasket(int tableId)
+        {
+            var document = db.Documents.Where(s => s.TableId == tableId && s.IsOpen).Include(d =>d.Orders).FirstOrDefault();
+          
+            if (document != null)
+            {
+                foreach (var order in document.Orders)
+                {
+                    var artikal = db.Artikli.Find(order.ArtikalId);
+                    Korpa.Add(new ArtikalKorpaViewModel(artikal, order.Count));
+                }
+                CalculateTotalPrice();
+            }
+        }
+
+        private void Korpa_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (Korpa.Count > 0)
+            {
+                CanCloseOrder = true;
+            }
+            else
+            {
+                CanCloseOrder = false;
+            }
+        }
+
+        private void CloseWindow()
+        {
+            _currentWindowService.Close();
+        }
+
+        private void OrderCheckOut()
+        {
+            var document = db.Documents.Where(s =>
+                s.TableId == tableId && s.IsOpen).Include(s => s.Orders).FirstOrDefault();
+            if (Korpa.Count == 0)
+            {
+                document!.IsOpen = false;
+                db.SaveChanges();
+            }
+            if (Korpa.Count > 0)
+            {
+               
+                if (document != null)
+                {
+                    foreach (var artikal in Korpa)
+                    {
+                        
+                        foreach (var documentOrder in document.Orders.ToList())
+                        {
+                            if (documentOrder.ArtikalId == artikal.Artikal.Id)
+                            {
+                                if (documentOrder.Count != artikal.Count)
+                                {
+                                    documentOrder.Count = artikal.Count;
+                                    db.SaveChanges();
+
+                                }
+                              
+                            }
+                            else
+                            {
+                                var order = db.Orders.Create();
+                                order.Artikal = artikal.Artikal;
+                                order.ArtikalId = artikal.Artikal.Id;
+                                order.Count = artikal.Count;
+                                order.Date = DateTime.Now.Date;
+                                order.Id = Guid.NewGuid();
+                                order.Time = DateTime.Now;
+                                order.IsDeleted = false;
+                                order.Price = artikal.Artikal.Price * artikal.Count;
+
+
+                                document.Orders.Add(order);
+                                db.SaveChanges();
+                            }
+                        }
+                    }
+
+                }
+                else
+                {
+                    ICollection<Order> orders = new List<Order>();
+                    foreach (var artikal in Korpa)
+                    {
+                        orders.Add(new Order()
+                        {
+                            ArtikalId = artikal.Artikal.Id,
+                            Count = artikal.Count,
+                            Date = DateTime.Now.Date,
+                            Id = Guid.NewGuid(),
+                            Time = DateTime.Now,
+                            IsDeleted = false,
+                            Price = artikal.Artikal.Price * artikal.Count,
+                            Artikal = artikal.Artikal
+                        });
+                    }
+                    // Print slip 
+                    Document doc = new Document()
+                    {
+                        TableId = tableId,
+                        Orders = orders,
+                        Date = DateTime.Now,
+                        Id = Guid.NewGuid(),
+                        IsOpen = true
+                    };
+                    db.Documents.Add(doc);
+                    db.SaveChanges();
+
+                    var e = db.Documents.Find(doc.Id);
+                    if (e != null)
+                    {
+
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
+                }
+
+                
+                
+
+                // Create The document
+                // Close the window
+            }
+            else
+            {
+                CloseWindow();
+            }
+
+            CloseWindow();
+        }
+
+        private void CloseOrder()
+        {
+            // Close Order Document
+            // print slip
+            // close window
+        }
         private void CalculateTotalPrice()
         {
             TotalPrice = Korpa.Sum(x => x.TotalPrice);
@@ -129,6 +336,7 @@ namespace EtnaPOS.ViewModels
             }
         }
 
+        
 
         protected void RemoveArtikalFromList()
         {
@@ -144,6 +352,20 @@ namespace EtnaPOS.ViewModels
                     else if(Korpa.FirstOrDefault(s => s.Artikal.Id == artikal.Artikal.Id)!.Count == 1)
                     {
                         Korpa.Remove(artikal);
+
+                        var document = db.Documents.Where(s =>
+                            s.TableId == tableId && s.IsOpen).Include(s => s.Orders).FirstOrDefault();
+                        if (document != null)
+                        {
+                            var order = document.Orders.FirstOrDefault(s => s.ArtikalId == artikal.Artikal.Id);
+                            if (order != null)
+                            {
+                                document.Orders.Remove(order);
+                                order.IsDeleted = true;
+                                db.SaveChanges();
+                            }
+                            
+                        }
                         CalculateTotalPrice();
                     }
                 }
@@ -154,12 +376,15 @@ namespace EtnaPOS.ViewModels
             if (Artikli == null)
             {
                 Artikli = new ObservableCollection<Artikal>();
+                ArtiklCache = new ObservableCollection<Artikal>();
             }
             else if (Artikli.Count > 0)
             {
                 Artikli.Clear();
+                ArtiklCache.Clear();
             }
-            Artikli = db.Artikli.Where(s=>s.IsActive).ToObservableCollection();
+            Artikli = db.Artikli.Where(s => s.IsActive).ToObservableCollection();
+            ArtiklCache = Artikli;
         }
 
         public override void Dispose()
