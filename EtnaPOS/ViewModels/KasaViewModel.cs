@@ -18,6 +18,7 @@ namespace EtnaPOS.ViewModels
     public class KasaViewModel : BaseViewModel
     {
         private int tableId { get; }
+        private Document dbDocument { get; set; }
         public string TableNumber { get; }
         private EtnaDbContext db => App.GetService<EtnaDbContext>()!;
         private ObservableCollection<ArtikalKorpaViewModel> _korpa;
@@ -279,9 +280,10 @@ namespace EtnaPOS.ViewModels
                         Date = WorkDay.Date,
                         Time = DateTime.Now,
                         Id = Guid.NewGuid(),
-                        IsOpen = true
+                        IsOpen = true,
+                        TotalPrice = 0
                     };
-                    db.Documents.Add(doc);
+                    dbDocument = db.Documents.Add(doc);
                     db.SaveChanges();
 
                     var e = db.Documents.Find(doc.Id);
@@ -311,6 +313,17 @@ namespace EtnaPOS.ViewModels
 
         private void CloseOrder()
         {
+            if (dbDocument != null)
+            {
+                dbDocument.TotalPrice = dbDocument.Orders.Sum(s => s.Price);
+                dbDocument.IsOpen = false;
+                var eState = db.SaveChanges();
+                if (eState > 0)
+                {
+                    // print slip
+                }
+
+            }
             // Close Order Document
             // print slip
             // close window

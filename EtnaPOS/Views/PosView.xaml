@@ -64,7 +64,7 @@
                                     Width="auto"
                                     Height="auto"
                                     HorizontalAlignment="Center"
-                                    FontSize="24"
+                                    FontSize="20"
                                     FontWeight="Bold"
                                     Foreground="Black"
                                     Text="{Binding TableName}" />

@@ -13,6 +13,7 @@ namespace EtnaPOS.DAL.Models
         public DateTime Date { get; set; }
         public DateTime Time { get; set; }
         public bool IsOpen { get; set; }
+        public decimal TotalPrice { get; set; }
 
     }
 }
