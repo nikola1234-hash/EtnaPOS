@@ -50,8 +50,18 @@ namespace EtnaPOS.Services
             foreach (var node in nodes)
             {
                 yield return node;
+
                 foreach (var child in Collect(node.Children))
+                {
                     yield return child;
+                    if (child.Children.Count == 0)
+                    {
+                        break;
+                    }
+                }
+                        
+
+                
             }
                 
         }

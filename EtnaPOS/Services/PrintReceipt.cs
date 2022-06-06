@@ -77,7 +77,7 @@ namespace EtnaPOS.Services
             {
                 var doc = new PrintDocument();
                 doc.PrintPage += new PrintPageEventHandler(CreateReceipt);
-                doc.PrinterSettings.PrinterName = EtnaPOS.Models.PrinterSettings.PrinterName;
+                doc.PrinterSettings.PrinterName = EtnaPOS.Models.PrinterSettings.PrinterName ?? throw new InvalidOperationException("No printer is chosen"); ;
                 if (doc.PrinterSettings.IsValid)
                 {
                     doc.Print();
@@ -92,11 +92,12 @@ namespace EtnaPOS.Services
 
         public void Blok()
         {
+            
             try
             {
                 var doc = new PrintDocument();
                 doc.PrintPage += new PrintPageEventHandler(CreateBlok);
-                doc.PrinterSettings.PrinterName = EtnaPOS.Models.PrinterSettings.PrinterName;
+                doc.PrinterSettings.PrinterName = EtnaPOS.Models.PrinterSettings.PrinterName ?? throw new InvalidOperationException("No printer is chosen");
                 if (doc.PrinterSettings.IsValid)
                 {
                     doc.Print();

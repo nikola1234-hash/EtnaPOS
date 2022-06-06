@@ -26,6 +26,7 @@ namespace EtnaPOS.Windows
         public SelectWorkDay()
         {
             InitializeComponent();
+            datePicker.SelectedDate = DateTime.Now.Date;
         }
 
         private void submitButton_Click(object sender, RoutedEventArgs e)
