@@ -108,6 +108,7 @@ namespace EtnaPOS.ViewModels
         public ICommand RemoveCommand { get; }
         public ICommand CheckOutCommand { get; }
         public ICommand ExitCommand { get; }
+        public ICommand CloseOrderCommand { get; }
 
         private object _selectedItem;
 
@@ -142,29 +143,21 @@ namespace EtnaPOS.ViewModels
             }
         }
 
-        private Order _orderToRemove;
-
-        public Order OrderToRemove
-        {
-            get { return _orderToRemove; }
-            set
-            {
-                _orderToRemove = value;
-                OnPropertyChanged();
-            }
-        }
-
+       
         public KasaViewModel(int tableId)
         {
             this.tableId = tableId;
 
             TableNumber = "Sto: " + db.Tables.Find(tableId)!.TableName;
+            dbDocument = db.Documents.FirstOrDefault(s => s.TableId == tableId && s.Date == WorkDay.Date && s.IsOpen) ?? null;
 
             DoubleClickCommand = new DelegateCommand(AddArtikalToList);
             RemoveCommand = new DelegateCommand(RemoveArtikalFromList);
 
             CheckOutCommand = new DelegateCommand(OrderCheckOut);
             ExitCommand = new DelegateCommand(CloseWindow);
+
+            CloseOrderCommand = new DelegateCommand(CloseOrder);
 
             Korpa = new ObservableCollection<ArtikalKorpaViewModel>();
             Korpa.CollectionChanged += Korpa_CollectionChanged;
@@ -192,13 +185,15 @@ namespace EtnaPOS.ViewModels
 
         private void Korpa_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if (Korpa.Count > 0)
+            if (Korpa.Count > 0 && dbDocument != null)
             {
                 CanCloseOrder = true;
+                OnPropertyChanged(nameof(CanCloseOrder));
             }
             else
             {
                 CanCloseOrder = false;
+                OnPropertyChanged(nameof(CanCloseOrder));
             }
         }
 
@@ -324,6 +319,7 @@ namespace EtnaPOS.ViewModels
 
         private void CloseOrder()
         {
+            
             if (dbDocument != null)
             {
                 dbDocument.TotalPrice = dbDocument.Orders.Sum(s => s.Price);

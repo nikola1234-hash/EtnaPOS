@@ -34,5 +34,41 @@ namespace EtnaPOS.Properties {
                 this["PrinterName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("16")]
+        public int PrinterFontSize {
+            get {
+                return ((int)(this["PrinterFontSize"]));
+            }
+            set {
+                this["PrinterFontSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("80")]
+        public int PrinterLayoutWidth {
+            get {
+                return ((int)(this["PrinterLayoutWidth"]));
+            }
+            set {
+                this["PrinterLayoutWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int PrinterLayoutHeight {
+            get {
+                return ((int)(this["PrinterLayoutHeight"]));
+            }
+            set {
+                this["PrinterLayoutHeight"] = value;
+            }
+        }
     }
 }

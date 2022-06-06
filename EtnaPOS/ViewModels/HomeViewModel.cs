@@ -19,11 +19,19 @@ namespace EtnaPOS.ViewModels
         public ICommand OpenDesignerCommand { get; }
         public ICommand ImportCommand { get; }
         public ICommand ZaduzenjeCommand { get; }
+        public ICommand PrintSettings { get; }
         public HomeViewModel()
         {
             OpenDesignerCommand = new DelegateCommand(OpenDesigner);
             ImportCommand = new DevExpress.Mvvm.DelegateCommand(ImportArticles);
             ZaduzenjeCommand = new DevExpress.Mvvm.DelegateCommand(OpenZaduzenje);
+            PrintSettings = new DevExpress.Mvvm.DelegateCommand(OpenSettings);
+        }
+
+        private void OpenSettings()
+        {
+            Dialogs.PrintSettings ps = new PrintSettings();
+            ps.ShowDialog();
         }
 
         private void ImportArticles()
@@ -55,6 +63,7 @@ namespace EtnaPOS.ViewModels
                 List<Artikal> artikli = File.ReadAllLines(openFileDialog.FileName)
                                             .Skip(1)
                                             .Select(v => Artikal.FromCsv(v, id)).ToList();
+                
                 _db.Artikli.AddRange(artikli);
                 _db.SaveChanges();
             }

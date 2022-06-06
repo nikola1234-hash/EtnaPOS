@@ -129,7 +129,8 @@
                         Height="70"
                         Content="Naplata" 
                         IsEnabled="{Binding CanCloseOrder}"
-                        Width="Auto">
+                        Width="Auto"
+                        Command="{Binding CloseOrderCommand}">
                     <Button.Style>
                         <Style TargetType="{x:Type Button}">
                             <Setter Property="Background" Value="Red"/>

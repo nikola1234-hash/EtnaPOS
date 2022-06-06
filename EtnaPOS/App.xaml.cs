@@ -69,12 +69,15 @@ namespace EtnaPOS
 
             if (result == true)
             {
-                window.Show();
+                window.ShowDialog();
             }
             else
             {
                 MessageBox.Show("Program ce se zatvoriti.");
             }
+
+            
+            Environment.Exit(Environment.ExitCode);
         }
     }
 }
