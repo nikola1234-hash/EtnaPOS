@@ -50,7 +50,7 @@
                             Margin="5"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            Background="LightGreen"
+                            Background="{Binding TableBackground}"
                             Command="{Binding DataContext.OpenTableCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:PosView}}}"
                             CommandParameter="{Binding Id}">
                             <!--<Button.ContextMenu>
@@ -68,7 +68,16 @@
                                     FontWeight="Bold"
                                     Foreground="Black"
                                     Text="{Binding TableName}" />
-                              
+                                <TextBlock
+                                    Margin="0 5 0 0"
+                                    Width="auto"
+                                    Height="auto"
+                                    HorizontalAlignment="Center"
+                                    FontSize="18"
+                                    Visibility="{Binding ShowPrice, Converter={StaticResource BoolToVis}}"
+                                    Foreground="White"
+                                    Text="{Binding TotalPrice}" />
+
                             </StackPanel>
                         </Button>
                     </Grid>

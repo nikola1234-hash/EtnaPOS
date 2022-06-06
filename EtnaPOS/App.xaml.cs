@@ -15,6 +15,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Data.SqlClient;
+using EtnaPOS.Windows;
 
 
 namespace EtnaPOS
@@ -63,7 +64,17 @@ namespace EtnaPOS
             {
                 DataContext = viewModel
             };
-            window.Show();
+            var selectDateDialog = new SelectWorkDay();
+            var result = selectDateDialog.ShowDialog();
+
+            if (result == true)
+            {
+                window.Show();
+            }
+            else
+            {
+                MessageBox.Show("Program ce se zatvoriti.");
+            }
         }
     }
 }

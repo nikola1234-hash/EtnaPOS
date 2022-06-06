@@ -11,6 +11,7 @@ namespace EtnaPOS.DAL.Models
         public Table Table { get; set; }    
         public ICollection<Order> Orders { get; set; }
         public DateTime Date { get; set; }
+        public DateTime Time { get; set; }
         public bool IsOpen { get; set; }
 
     }

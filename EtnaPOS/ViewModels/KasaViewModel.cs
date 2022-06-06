@@ -276,7 +276,8 @@ namespace EtnaPOS.ViewModels
                     {
                         TableId = tableId,
                         Orders = orders,
-                        Date = DateTime.Now,
+                        Date = WorkDay.Date,
+                        Time = DateTime.Now,
                         Id = Guid.NewGuid(),
                         IsOpen = true
                     };
@@ -322,9 +323,9 @@ namespace EtnaPOS.ViewModels
         {
             if(SelectedItem is Artikal artikal)
             {
-                if (Korpa.FirstOrDefault(s => s.Artikal == artikal) != null)
+                if (Korpa.FirstOrDefault(s=>s.Artikal.Id == artikal.Id) != null)
                 {
-                    Korpa.FirstOrDefault(s => s.Artikal == artikal)!.Count += 1;
+                    Korpa.FirstOrDefault(s => s.Artikal.Id == artikal.Id)!.Count += 1;
                     CalculateTotalPrice();
                 }
                 else

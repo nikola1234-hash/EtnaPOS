@@ -1,6 +1,6 @@
 ﻿using DevExpress.Mvvm;
 using EtnaPOS.DAL.DataAccess;
-using EtnaPOS.DAL.Models;
+
 using EtnaPOS.EtnaEventArgs;
 using EtnaPOS.Events.EventAggregator;
 using EtnaPOS.ViewModels.WindowViewModels;
@@ -10,6 +10,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using EtnaPOS.Models;
 
 namespace EtnaPOS.ViewModels
 {
@@ -50,10 +51,14 @@ namespace EtnaPOS.ViewModels
             {
                 Tables.Clear();
             }
-            var tables = db.Tables;
+            var tables = db.Tables.ToList();
             if(tables != null)
             {
-                Tables = new ObservableCollection<Table>(tables);
+                Tables = new ObservableCollection<Table>();
+                foreach (var table in tables)
+                {
+                    Tables.Add(new Table(table));
+                }
             }
             OnPropertyChanged(nameof(Tables));
         }
@@ -79,12 +84,13 @@ namespace EtnaPOS.ViewModels
                     DataContext = new KasaViewModel(id)
                 };
                 window.ShowDialog();
+                LoadTables();
             }
         }
 
         private void AddNewTable(object obj)
         {
-            if (obj is Table table && table != null)
+            if (obj is EtnaPOS.DAL.Models.Table table && table != null)
             {
                 db.Tables.Add(table);
                 db.SaveChanges();
