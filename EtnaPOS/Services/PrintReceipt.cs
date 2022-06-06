@@ -14,6 +14,7 @@ namespace EtnaPOS.Services
     public class PrintReceipt : IDisposable
     {
         private Document Document { get; }
+        private List<Order> Orders { get; }
 
         private const int FIRST_COL_PAD = 20;
         private const int SECOND_COL_PAD = 7;
@@ -28,6 +29,18 @@ namespace EtnaPOS.Services
             Document = document;
         }
 
+        public PrintReceipt(List<Order> orders)
+        {
+            if (orders == null)
+                throw new NullReferenceException();
+            if (orders.Count == 0)
+            {
+                return;
+            }
+
+            Orders = orders;
+
+        }
 
         private void CreateReceipt(object sender, PrintPageEventArgs e)
         {
@@ -64,7 +77,12 @@ namespace EtnaPOS.Services
             {
                 var doc = new PrintDocument();
                 doc.PrintPage += new PrintPageEventHandler(CreateReceipt);
-                doc.Print();
+                doc.PrinterSettings.PrinterName = EtnaPOS.Models.PrinterSettings.PrinterName;
+                if (doc.PrinterSettings.IsValid)
+                {
+                    doc.Print();
+                }
+                
             }
             catch (Exception ex)
             {
@@ -74,7 +92,46 @@ namespace EtnaPOS.Services
 
         public void Blok()
         {
+            try
+            {
+                var doc = new PrintDocument();
+                doc.PrintPage += new PrintPageEventHandler(CreateBlok);
+                doc.PrinterSettings.PrinterName = EtnaPOS.Models.PrinterSettings.PrinterName;
+                if (doc.PrinterSettings.IsValid)
+                {
+                    doc.Print();
+                }
 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private void CreateBlok(object sender, PrintPageEventArgs e)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("Porudzbina");
+            sb.AppendLine("==================");
+            foreach (var order in Orders)
+            {
+                sb.Append(order.Artikal.Name.PadRight(FIRST_COL_PAD));
+                var breakDown = order.Count > 0 ? order.Count.ToString() : string.Empty;
+                sb.Append(breakDown.PadRight(SECOND_COL_PAD));
+                
+            }
+            sb.AppendLine("==================");
+
+            var printText = new PrintText(sb.ToString(), new Font("Monospace", 8));
+
+            Graphics g = e.Graphics;
+            var layoutArea = new SizeF(80, 0);
+            SizeF stringSize = g.MeasureString(printText.Text, printText.Font, layoutArea, printText.StringFormat);
+
+            RectangleF rectf = new RectangleF(new PointF(), new SizeF(80, stringSize.Height));
+
+            g.DrawString(printText.Text, printText.Font, Brushes.Black, rectf, printText.StringFormat);
         }
 
 

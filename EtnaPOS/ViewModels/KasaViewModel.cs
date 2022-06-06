@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.Native;
@@ -210,6 +211,8 @@ namespace EtnaPOS.ViewModels
         {
             var document = db.Documents.Where(s =>
                 s.TableId == tableId && s.IsOpen).Include(s => s.Orders).FirstOrDefault();
+            List<Order> printOrders = new List<Order>();
+
             if (Korpa.Count == 0)
             {
                 document!.IsOpen = false;
@@ -230,8 +233,7 @@ namespace EtnaPOS.ViewModels
                                 if (documentOrder.Count != artikal.Count)
                                 {
                                     documentOrder.Count = artikal.Count;
-                                    db.SaveChanges();
-
+                                    
                                 }
                               
                             }
@@ -249,10 +251,16 @@ namespace EtnaPOS.ViewModels
 
 
                                 document.Orders.Add(order);
-                                db.SaveChanges();
+                                printOrders.Add(order);
+                                
                             }
                         }
                     }
+
+                    db.SaveChanges();
+
+                    PrintReceipt printeReceipt = new PrintReceipt(printOrders);
+                    printeReceipt.Blok();
 
                 }
                 else
@@ -286,6 +294,9 @@ namespace EtnaPOS.ViewModels
                     dbDocument = db.Documents.Add(doc);
                     db.SaveChanges();
 
+                    PrintReceipt printReceipt = new PrintReceipt(orders.ToList());
+                    printReceipt.Blok();
+
                     var e = db.Documents.Find(doc.Id);
                     if (e != null)
                     {
@@ -296,7 +307,7 @@ namespace EtnaPOS.ViewModels
                         throw new Exception();
                     }
                 }
-
+                
                 
                 
 
@@ -320,6 +331,9 @@ namespace EtnaPOS.ViewModels
                 var eState = db.SaveChanges();
                 if (eState > 0)
                 {
+                    PrintReceipt printReceipt = new PrintReceipt(dbDocument);
+                    printReceipt.Receipt();
+                    CloseWindow();
                     // print slip
                 }
 
