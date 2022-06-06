@@ -46,6 +46,7 @@ namespace EtnaPOS.Services
         }
         private IEnumerable<Node> Collect(IEnumerable<Node> nodes)
         {
+            
             foreach (var node in nodes)
             {
                 yield return node;

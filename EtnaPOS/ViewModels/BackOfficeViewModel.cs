@@ -41,12 +41,35 @@ namespace EtnaPOS.ViewModels
             }
         }
 
+        private bool _canCreateArticle;
+
+        public bool CanCreateArticle
+        {
+            get { return _canCreateArticle; }
+            set
+            {
+                _canCreateArticle = value;
+                OnPropertyChanged();
+            }
+        }
         private ILogger<BackOfficeViewModel> logger => App.GetService<ILogger<BackOfficeViewModel>>();  
         public object SelectedItem
         {
             get { return _selectedItem; }
             set
             {
+                if (value is Node node)
+                {
+                    if (node.Name == "Artikli")
+                    {
+                        CanCreateArticle = false;
+                    }
+                    else
+                    {
+                        CanCreateArticle = true;
+                    }
+                    OnPropertyChanged(nameof(CanCreateArticle));
+                }
                 _selectedItem = value;
                 OnPropertyChanged();
             }

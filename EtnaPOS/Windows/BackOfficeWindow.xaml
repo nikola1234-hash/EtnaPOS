@@ -46,7 +46,7 @@
                     <dxmvvm:EventToCommand EventName="NodeDoubleClick" Command="{Binding NewArticleCommand}"/>
                 </dxmvvm:Interaction.Behaviors>
                 <dxg:TreeViewControl.NodeMenuCustomizations>
-                    <dxb:BarButtonItem Content="{Binding DataContext.AddArticleText, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type window:BackOfficeWindow}}}"
+                    <dxb:BarButtonItem IsEnabled="{Binding DataContext.CanCreateArticle,  RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type window:BackOfficeWindow}}}"  Content="{Binding DataContext.AddArticleText, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type window:BackOfficeWindow}}}"
                                        Command="{Binding DataContext.NewArticleCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type window:BackOfficeWindow}}}" />
                     <dxb:BarButtonItem Content="Nova Kategorija" Command="{Binding DataContext.NewCategoryCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type window:BackOfficeWindow}}}" />
                     <dxb:BarButtonItem IsEnabled="False" Content="Deaktiviraj Artikal" />
