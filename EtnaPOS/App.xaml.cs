@@ -1,20 +1,12 @@
 ﻿using EtnaPOS.DAL.DataAccess;
-using EtnaPOS.Models;
 using EtnaPOS.Services;
 using EtnaPOS.ViewModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Prism.Events;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Data.SqlClient;
 using EtnaPOS.Windows;
 
 
@@ -37,15 +29,15 @@ namespace EtnaPOS
 
             var services = new ServiceCollection();
             services.AddLogging();
-            services.AddSingleton<EtnaDbContext>();
-            services.AddTransient<MainViewModel>();
-            services.AddTransient<HomeViewModel>();
-            services.AddSingleton<PosViewModel>();  
             services.AddSingleton<INavigationStore, NavigationStore>();
             services.AddSingleton<ITreeViewNodeGenerator, TreeViewNodeGenerator>();
             services.AddSingleton<IViewFactory, ViewFactory>();
             services.AddSingleton<IEventAggregator, EventAggregator>();
-            
+
+            services.AddSingleton<EtnaDbContext>();
+            services.AddTransient<MainViewModel>();
+            services.AddTransient<HomeViewModel>();
+            services.AddTransient<PosViewModel>();
 
 
             Configuration = builder.Build();
@@ -69,7 +61,11 @@ namespace EtnaPOS
 
             if (result == true)
             {
-                window.ShowDialog();
+                var r = window.ShowDialog();
+                if (r == null || r == false)
+                {
+                    Environment.Exit(Environment.ExitCode);
+                }
             }
             else
             {
@@ -77,7 +73,7 @@ namespace EtnaPOS
             }
 
             
-            Environment.Exit(Environment.ExitCode);
+            
         }
     }
 }

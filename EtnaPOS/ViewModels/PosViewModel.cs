@@ -1,6 +1,5 @@
 ﻿using DevExpress.Mvvm;
 using EtnaPOS.DAL.DataAccess;
-
 using EtnaPOS.EtnaEventArgs;
 using EtnaPOS.Events.EventAggregator;
 using EtnaPOS.ViewModels.WindowViewModels;
