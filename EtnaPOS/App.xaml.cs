@@ -69,7 +69,7 @@ namespace EtnaPOS
 
         private void CreateInitialCategory()
         {
-            var _db = this.GetService<EtnaDbContext>();
+            var _db = App.GetService<EtnaDbContext>();
             var artikli = _db.Kategorije.FirstOrDefault(s => s.Kategorija == "Artikli");
             if (artikli == null)
             {
