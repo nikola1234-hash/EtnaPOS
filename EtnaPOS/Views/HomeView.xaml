@@ -19,8 +19,9 @@
             <ColumnDefinition Width="Auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Button Margin="0 10 0 0" Content="Select printer" Command="{Binding OpenDesignerCommand}"></Button>
-        <Button Margin="10 10 0 0" Grid.Row="0" Grid.Column="1" Content="Podesavanja Printa" Command="{Binding PrintSettings}"></Button>
+        <Button Margin="10 10 0 0" Grid.Row="0" Grid.Column="1" Background="DimGray" Content="Zatvaranje dana" Command="{Binding CloseDayCommand}"></Button>
         <Button Margin="0 10 0 0" Grid.Row="1" Content="Uvezi artikle" Command="{Binding ImportCommand}"></Button>
         <Button Margin="0 10 0 0" Grid.Row="2" Content="Zaduzenje" Command="{Binding ZaduzenjeCommand}"></Button>
+        <Button Margin="10 10 0 0" Grid.Column="1" Grid.Row="1" Content="Dopuna" Command="{Binding DopunaCommand}"></Button>
     </Grid>
 </UserControl>

@@ -6,7 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Prism.Events;
 using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
+using DevExpress.Mvvm.POCO;
+using EtnaPOS.DAL.Models;
 using EtnaPOS.Windows;
 
 
@@ -19,6 +22,7 @@ namespace EtnaPOS
     {
         public static IServiceProvider ServiceProvider { get; set; }
         public static IConfiguration Configuration { get; set; }
+
         protected void ConfigureServices()
         {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
@@ -29,12 +33,12 @@ namespace EtnaPOS
 
             var services = new ServiceCollection();
             services.AddLogging();
+            services.AddSingleton<EtnaDbContext>();
             services.AddSingleton<INavigationStore, NavigationStore>();
             services.AddSingleton<ITreeViewNodeGenerator, TreeViewNodeGenerator>();
             services.AddSingleton<IViewFactory, ViewFactory>();
             services.AddSingleton<IEventAggregator, EventAggregator>();
 
-            services.AddSingleton<EtnaDbContext>();
             services.AddTransient<MainViewModel>();
             services.AddTransient<HomeViewModel>();
             services.AddTransient<PosViewModel>();
@@ -43,37 +47,41 @@ namespace EtnaPOS
             Configuration = builder.Build();
             ServiceProvider = services.BuildServiceProvider();
         }
+
         public static T? GetService<T>()
         {
             return (T?)ServiceProvider.GetService(typeof(T));
         }
-     
+
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             ConfigureServices();
+            CreateInitialCategory();
+
             var viewModel = ServiceProvider.GetRequiredService<MainViewModel>();
             MainWindow window = new MainWindow
             {
                 DataContext = viewModel
             };
-            var selectDateDialog = new SelectWorkDay();
-            var result = selectDateDialog.ShowDialog();
 
-            if (result == true)
+            window.ShowDialog();
+        }
+
+        private void CreateInitialCategory()
+        {
+            var _db = this.GetService<EtnaDbContext>();
+            var artikli = _db.Kategorije.FirstOrDefault(s => s.Kategorija == "Artikli");
+            if (artikli == null)
             {
-                var r = window.ShowDialog();
-                if (r == null || r == false)
+                KategorijaArtikla kategorija = new KategorijaArtikla
                 {
-                    Environment.Exit(Environment.ExitCode);
-                }
+                    Kategorija = "Artikli",
+                    DateCreated = DateTime.Now,
+                    CreatedBy = "System"
+                };
+                _db.Kategorije.Add(kategorija);
+                _db.SaveChanges();
             }
-            else
-            {
-                MessageBox.Show("Program ce se zatvoriti.");
-            }
-
-            
-            
         }
     }
 }

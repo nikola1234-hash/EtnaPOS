@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using DevExpress.Xpf.Core;
+using EtnaPOS.DAL.DataAccess;
+using EtnaPOS.DAL.Models;
 using EtnaPOS.Models;
 using MessageBox = System.Windows.MessageBox;
 
@@ -21,6 +23,7 @@ namespace EtnaPOS.Windows
     /// <summary>
     /// Interaction logic for SelectWorkDay.xaml
     /// </summary>
+    /// 
     public partial class SelectWorkDay : ThemedWindow
     {
         public SelectWorkDay()
@@ -31,45 +34,31 @@ namespace EtnaPOS.Windows
 
         private void submitButton_Click(object sender, RoutedEventArgs e)
         {
+
             if (datePicker.SelectedDate != null)
             {
+                var db = App.GetService<EtnaDbContext>();
                 if (datePicker.SelectedDate == DateTime.Now.Date)
                 {
-                    WorkDay.Date = (DateTime)datePicker.SelectedDate.Value;
-                    DialogResult = true;
-                    
-
-                }
-                if (datePicker.SelectedDate > DateTime.Now.Date)
-                {
-                    var result = MessageBox.Show("Da li stvarno zelite da predjete u novi datum ?", "Upozorenje",
-                        MessageBoxButton.YesNo);
-                    if (result == MessageBoxResult.Yes)
+                    WorkDay.Date = datePicker.SelectedDate.Value;
+                    var otvaranjeDana = new ZatvaranjeDana(WorkDay.Date);
+                    var day = db.ZatvaranjeDanas.FirstOrDefault(s=> s.Date == WorkDay.Date);
+                    if (day != null && day.IsClosed)
                     {
-                        WorkDay.Date = (DateTime)datePicker.SelectedDate.Value;
+                        MessageBox.Show("Ovaj dan je zakljucan ?", "Upozorenje");
+                    }
+                    if (day != null && day.IsClosed == false)
+                    {
                         DialogResult = true;
                     }
-                    else
+                    else if(day == null)
                     {
-                        DialogResult = false;
-                    }
-
-                }
-                if (datePicker.SelectedDate < DateTime.Now.Date)
-                {
-                    var result = MessageBox.Show("Da li stvarno zelite da vatite datum ?", "Upozorenje",
-                        MessageBoxButton.YesNo);
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        WorkDay.Date = (DateTime)datePicker.SelectedDate.Value;
+                        db.ZatvaranjeDanas.Add(otvaranjeDana);
+                        db.SaveChanges();
                         DialogResult = true;
                     }
-                    else
-                    {
-                        DialogResult = false;
-                    }
-
                 }
+           
             }
         }
     }

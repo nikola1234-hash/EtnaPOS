@@ -16,6 +16,7 @@ namespace EtnaPOS.DAL.DataAccess
         public DbSet<Order> Orders { get; set; }
         
         public DbSet<Document> Documents { get; set; }
+        public DbSet<ZatvaranjeDana> ZatvaranjeDanas { get; set; }
 
     }
 }

@@ -41,7 +41,8 @@ namespace EtnaPOS.ViewModels
                 OnPropertyChanged();
             }
         }
-        private readonly IEventAggregator _ea;
+
+        private IEventAggregator _ea => App.GetService<IEventAggregator>();
         public ICommand NewTableCommand { get; set; }
         public ICommand<int> OpenTableCommand { get; set; }
         private void LoadTables()
@@ -61,14 +62,14 @@ namespace EtnaPOS.ViewModels
             }
             OnPropertyChanged(nameof(Tables));
         }
-        public PosViewModel(IEventAggregator ea)
+        public PosViewModel()
         {
             LoadTables();
 
             OpenTableCommand = new DelegateCommand<int>(OpenTableWindow);
             NewTableCommand = new DelegateCommand(CreateNewTable);
 
-            _ea = ea;
+
             _ea.GetEvent<ManageTableKey>().Subscribe(ManageTables);
             _ea.GetEvent<PassObjectEvent>().Subscribe(AddNewTable);
             

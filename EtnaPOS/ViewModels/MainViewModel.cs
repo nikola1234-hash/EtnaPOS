@@ -5,7 +5,10 @@ using EtnaPOS.Services;
 using EtnaPOS.Windows;
 using Prism.Events;
 using System;
+using System.Windows;
 using System.Windows.Input;
+using DevExpress.Xpf.Core;
+using DevExpress.Xpf.Editors;
 
 namespace EtnaPOS.ViewModels
 {
@@ -17,6 +20,38 @@ namespace EtnaPOS.ViewModels
         public ICommand ManageTablesCommand { get; set; }
         public NavigationCommand NavigationCommand { get; }
         public ICommand BackofficeCommand { get; set; }
+        public ICommand LoadedCommand { get; set; }
+        private DateTime _selectedDate = DateTime.Now.Date;
+        protected IDialogService DialogService
+        {
+            get;
+            set;
+        }
+        public DateTime SelectedDate
+        {
+            get { return _selectedDate; }
+            set
+            {
+                _selectedDate = value;
+                OnPropertyChanged(nameof(SelectedDate));
+            }
+        }
+
+        protected void ShowDialog()
+        {
+            DialogService = this.GetService<IDialogService>("ChoseDate");
+            var dsViewModel = new DialogServiceViewModel();
+            var result = DialogService.ShowDialog(dsViewModel.DialogCommands, "Radni dan", viewModel: dsViewModel);
+            if ((MessageBoxResult)result.Id == MessageBoxResult.OK)
+            {
+                return;
+            }
+            else
+            {
+                MessageBox.Show("Morate izabrati radni dan");
+                Environment.Exit(Environment.ExitCode);
+            }
+        }
         public MainViewModel(INavigationStore navigationStore, IViewFactory viewFactory, IEventAggregator ea)
         {
             _navigationStore = navigationStore;
@@ -25,7 +60,14 @@ namespace EtnaPOS.ViewModels
             _navigationStore.ViewChanged += _navigationStore_ViewChanged;
             ManageTablesCommand = new DelegateCommand(OnKeyCombinationPresses);
             BackofficeCommand = new DelegateCommand(OpenBackofficeWindow);
-            _ea = ea;   
+            LoadedCommand = new DelegateCommand(OnLoaded);
+            _ea = ea;
+          
+        }
+
+        private void OnLoaded()
+        {
+            ShowDialog();
         }
 
         private void OpenBackofficeWindow()

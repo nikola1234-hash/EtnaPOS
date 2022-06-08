@@ -5,10 +5,31 @@
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxnav="http://schemas.devexpress.com/winfx/2008/xaml/navigation"
     Title="MainWindow" Height="800" Width="1000"
     xmlns:navigationEnum="clr-namespace:EtnaPOS.Commands" xmlns:i="clr-namespace:DevExpress.Mvvm.UI.Interactivity;assembly=DevExpress.Xpf.Core.v21.2" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     WindowState="Maximized">
-    <i:Interaction.Behaviors>
+    <dx:ThemedWindow.Resources>
+        <DataTemplate x:Key="choseDate">
+            <dxlc:LayoutControl Orientation="Vertical" VerticalAlignment="Top" MinWidth="300">
+                <dxlc:LayoutItem Label="Izaberi Radni dan:">
+                    <DatePicker SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}"></DatePicker>
+                </dxlc:LayoutItem>
+            </dxlc:LayoutControl>
+        </DataTemplate>
+    </dx:ThemedWindow.Resources>
+    <dxmvvm:Interaction.Behaviors>
         <dxmvvm:KeyToCommand KeyGesture="Ctrl+T"  Command="{Binding ManageTablesCommand}" EventName="PreviewKeyDown"/>
-    </i:Interaction.Behaviors>
+        <!-- The ViewTemplate property specifies the dialog template -->
+        <dx:DialogService x:Name="ChoseDate" ViewTemplate="{StaticResource choseDate}" DialogWindowStartupLocation="CenterScreen">
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="Window">
+                    <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                    <Setter Property="WindowStyle" Value="ToolWindow" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
+        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding LoadedCommand}"/>
+    </dxmvvm:Interaction.Behaviors>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>

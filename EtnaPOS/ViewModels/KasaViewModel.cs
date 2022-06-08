@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using EtnaPOS.DAL.Models;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
-using System.Data.Entity.Migrations;
 using System.Linq;
-using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.Native;
-using DevExpress.Xpf.Core.Native;
 using EtnaPOS.DAL.DataAccess;
 using EtnaPOS.Models;
 using EtnaPOS.Services;
@@ -187,6 +184,7 @@ namespace EtnaPOS.ViewModels
         {
             if (Korpa.Count > 0 && dbDocument != null)
             {
+                
                 CanCloseOrder = true;
                 OnPropertyChanged(nameof(CanCloseOrder));
             }
@@ -204,24 +202,30 @@ namespace EtnaPOS.ViewModels
 
         private void OrderCheckOut()
         {
-            var document = db.Documents.Where(s =>
-                s.TableId == tableId && s.IsOpen).Include(s => s.Orders).FirstOrDefault();
+            ///Ako udjemo i izadjemo sa stola be kucanja.
+            if (dbDocument == null && Korpa.Count == 0)
+            {
+                CloseWindow();
+                return;
+            }
+
+
             List<Order> printOrders = new List<Order>();
 
             if (Korpa.Count == 0)
             {
-                document!.IsOpen = false;
+                dbDocument!.IsOpen = false;
                 db.SaveChanges();
             }
             if (Korpa.Count > 0)
             {
                
-                if (document != null)
+                if (dbDocument != null)
                 {
                     foreach (var artikal in Korpa)
                     {
                         
-                        foreach (var documentOrder in document.Orders.ToList())
+                        foreach (var documentOrder in dbDocument.Orders.ToList())
                         {
                             if (documentOrder.ArtikalId == artikal.Artikal.Id)
                             {
@@ -245,14 +249,13 @@ namespace EtnaPOS.ViewModels
                                 order.Price = artikal.Artikal.Price * artikal.Count;
 
 
-                                document.Orders.Add(order);
+                                dbDocument.Orders.Add(order);
                                 printOrders.Add(order);
                                 
                             }
                         }
                     }
 
-                    db.SaveChanges();
 
                     PrintReceipt printeReceipt = new PrintReceipt(printOrders);
                     printeReceipt.Blok();
@@ -287,24 +290,14 @@ namespace EtnaPOS.ViewModels
                         TotalPrice = 0
                     };
                     dbDocument = db.Documents.Add(doc);
-                    db.SaveChanges();
-
+               
                     PrintReceipt printReceipt = new PrintReceipt(orders.ToList());
                     printReceipt.Blok();
-
-                    var e = db.Documents.Find(doc.Id);
-                    if (e != null)
-                    {
-
-                    }
-                    else
-                    {
-                        throw new Exception();
-                    }
                 }
-                
-                
-                
+
+                db.SaveChanges();
+
+
 
                 // Create The document
                 // Close the window
