@@ -15,7 +15,7 @@ namespace EtnaPOS.Services
         private Document Document { get; }
         private List<Order> Orders { get; }
         private List<ArtikalDopuna> Dopuna { get; }
-
+        private float width => Properties.Settings.Default.PrinterLayoutWidth;
         private ZatvaranjeDana zd { get; }
 
         public PrintReceipt(Document document)
@@ -63,7 +63,7 @@ namespace EtnaPOS.Services
 
             float x = 10;
             float y = 5;
-            float width = 270.0F; // max width I found through trial and error
+            // max width I found through trial and error 270
             float height = 0F;
 
             Font drawFontArial12Bold = new Font("Arial", 12, FontStyle.Bold);
@@ -123,10 +123,10 @@ namespace EtnaPOS.Services
                 doc.DefaultPageSettings.PaperSize.Height = 30000;
                 doc.DefaultPageSettings.PaperSize.Width = 520;
 
-                PrintDialog pd = new PrintDialog();
-                pd.Document = doc;
-                pd.Document.DefaultPageSettings.PaperSize = psize;
-                pd.ShowDialog();
+                //PrintDialog pd = new PrintDialog();
+                //pd.Document = doc;
+                //pd.Document.DefaultPageSettings.PaperSize = psize;
+                //pd.ShowDialog();
 
                 if (doc.PrinterSettings.IsValid)
                 {
@@ -155,10 +155,12 @@ namespace EtnaPOS.Services
                 doc.PrinterSettings.PrinterName = EtnaPOS.Models.PrinterSettings.PrinterName ?? throw new InvalidOperationException("No printer is chosen");
                 doc.DefaultPageSettings.PaperSize.Height = 30000;
                 doc.DefaultPageSettings.PaperSize.Width = 520;
-                PrintDialog pd = new PrintDialog();
-                pd.Document = doc;
-                pd.Document.DefaultPageSettings.PaperSize = psize;
-                pd.ShowDialog();
+
+                //PrintDialog pd = new PrintDialog();
+                //pd.Document = doc;
+                //pd.Document.DefaultPageSettings.PaperSize = psize;
+                //pd.ShowDialog();
+
                 if (doc.PrinterSettings.IsValid)
                 {
                     doc.Print();
@@ -176,7 +178,6 @@ namespace EtnaPOS.Services
 
             float x = 10;
             float y = 5;
-            float width = 270.0F; // max width I found through trial and error
             float height = 0F;
 
             Font drawFontArial12Bold = new Font("Arial", 12, FontStyle.Bold);
@@ -246,6 +247,10 @@ namespace EtnaPOS.Services
                 pd.Document = doc;
                 pd.Document.DefaultPageSettings.PaperSize = psize;
                 pd.ShowDialog();
+                if (doc.PrinterSettings.IsValid)
+                {
+                    doc.Print();
+                }
 
                 doc.PrintPage -= new PrintPageEventHandler(CreateDopuna);
             }
@@ -260,7 +265,6 @@ namespace EtnaPOS.Services
         {
             float x = 10;
             float y = 5;
-            float width = 270.0F; // max width I found through trial and error
             float height = 0F;
 
             Font drawFontArial12Bold = new Font("Arial", 12, FontStyle.Bold);
@@ -331,6 +335,11 @@ namespace EtnaPOS.Services
                 pd.Document.DefaultPageSettings.PaperSize = psize;
                 pd.ShowDialog();
 
+                if (doc.PrinterSettings.IsValid)
+                {
+                    doc.Print();
+                }
+
                 doc.PrintPage -= new PrintPageEventHandler(CreateRazduzenje);
             }
             catch (Exception ex)
@@ -346,7 +355,7 @@ namespace EtnaPOS.Services
 
             float x = 10;
             float y = 5;
-            float width = 270.0F; // max width I found through trial and error
+            float width = 350.0F; // max width I found through trial and error
             float height = 0F;
 
             Font drawFontArial12Bold = new Font("Arial", 12, FontStyle.Bold);

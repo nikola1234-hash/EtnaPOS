@@ -4,6 +4,7 @@ using EtnaPOS.DAL.Models;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.Native;
@@ -167,7 +168,7 @@ namespace EtnaPOS.ViewModels
 
         private void InitializeBasket(int tableId)
         {
-            var document = db.Documents.Where(s => s.TableId == tableId && s.IsOpen).Include(d =>d.Orders).FirstOrDefault();
+            var document = db.Documents.Where(s => s.TableId == tableId && s.IsOpen && s.Date == WorkDay.Date).Include(d => d.Orders).FirstOrDefault();
           
             if (document != null)
             {
@@ -250,6 +251,7 @@ namespace EtnaPOS.ViewModels
 
 
                                 dbDocument.Orders.Add(order);
+                                
                                 printOrders.Add(order);
                                 
                             }
@@ -287,16 +289,33 @@ namespace EtnaPOS.ViewModels
                         Time = DateTime.Now,
                         Id = Guid.NewGuid(),
                         IsOpen = true,
-                        TotalPrice = 0
+                        TotalPrice = 0,
                     };
                     dbDocument = db.Documents.Add(doc);
-               
+
+                    var dan = db.ZatvaranjeDanas.FirstOrDefault(s => s.Date == WorkDay.Date);
+                    if (dan.Documents == null)
+                    {
+                        dan.Documents = new List<Document>();
+                    }
+                    dan.Documents.Add(dbDocument);
+
                     PrintReceipt printReceipt = new PrintReceipt(orders.ToList());
                     printReceipt.Blok();
                 }
 
-                db.SaveChanges();
 
+                try
+                {
+
+                    db.SaveChanges();
+
+                }
+                catch (Exception ex)
+                {
+
+                    MessageBox.Show(ex.Message, "Greska prilikom cuvanja dokumenta");
+                }
 
 
                 // Create The document

@@ -49,10 +49,10 @@ namespace EtnaPOS.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("80")]
-        public int PrinterLayoutWidth {
+        [global::System.Configuration.DefaultSettingValueAttribute("350")]
+        public float PrinterLayoutWidth {
             get {
-                return ((int)(this["PrinterLayoutWidth"]));
+                return ((float)(this["PrinterLayoutWidth"]));
             }
             set {
                 this["PrinterLayoutWidth"] = value;

@@ -38,28 +38,28 @@ namespace EtnaPOS.ViewModels
 
         private void PrintDopuna()
         {
-            var day = _db.ZatvaranjeDanas.Where(s => s.Date == WorkDay.Date)
-                .Include(d => d.Documents.Select(g => g.Orders))
-                .FirstOrDefault();
-            if (day == null)
+            var documents = _db.Documents.Where(s => s.Date == WorkDay.Date)
+                .Include(d => d.Orders);
+            if (documents == null || !documents.Any())
             {
-                MessageBox.Show("ERROR 45 PRINT DOPUNA");
+                MessageBox.Show("ERROR 45 PRINT DOPUNA, NEMA DOKUMENATA");
                 return;
             }
 
             List<ArtikalDopuna> artikliZaDopunu = new List<ArtikalDopuna>();
-            foreach (var dopuna in day.Documents)
+            foreach (var dopuna in documents)
             {
                 foreach (var order in dopuna.Orders)
                 {
-                    var a = artikliZaDopunu.FirstOrDefault(s => s.Name == order.Artikal.Name);
+                    var artikal = _db.Artikli.Find(order.ArtikalId);
+                    var a = artikliZaDopunu.FirstOrDefault(s => s.Name == artikal.Name);
                     if (a != null)
                     {
                         a.Count += order.Count;
                     }
                     else
                     {
-                        artikliZaDopunu.Add(new ArtikalDopuna(order.Artikal.Name, order.Count));
+                        artikliZaDopunu.Add(new ArtikalDopuna(artikal.Name, order.Count));
                     }
                 }
             }
@@ -102,9 +102,19 @@ namespace EtnaPOS.ViewModels
                 return;
             }
 
-            day.IsClosed = true;
-            _db.SaveChanges();
 
+            try
+            {
+                day.IsClosed = true;
+
+                _db.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message, "Greska");
+            }
             List<ArtikalDopuna> artikliZaDopunu = new List<ArtikalDopuna>();
             foreach (var dopuna in day.Documents)
             {
@@ -127,7 +137,7 @@ namespace EtnaPOS.ViewModels
                 PrintReceipt zad = new PrintReceipt(day);
                 zad.PrintRazduzenje();
 
-                Thread.Sleep(1000);
+               
 
                 PrintReceipt pr = new PrintReceipt(artikliZaDopunu);
                 pr.PrintDopuna();

@@ -8,8 +8,8 @@
     <Setting Name="PrinterFontSize" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">16</Value>
     </Setting>
-    <Setting Name="PrinterLayoutWidth" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">80</Value>
+    <Setting Name="PrinterLayoutWidth" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">350</Value>
     </Setting>
     <Setting Name="PrinterLayoutHeight" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
