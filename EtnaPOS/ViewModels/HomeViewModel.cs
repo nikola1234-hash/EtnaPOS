@@ -166,13 +166,7 @@ namespace EtnaPOS.ViewModels
 
         private void ImportArticles()
         {
-            splashScreen.StartSplashScreen("Importing articles");
-            for (int i = 0; i < 1110000; i++)
-            {
-                Thread.Sleep(500);
-                splashScreen.SplashScreenTextChange(i.ToString());
-            }
-            splashScreen.StopSplashScreen();
+          
             
             int id = 0;
             var doesExist = _db.Kategorije.FirstOrDefault(n => n.Kategorija == "Svi Artikli");

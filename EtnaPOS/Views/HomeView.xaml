@@ -64,7 +64,8 @@
                                 LargeGlyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}"
                                 MediumGlyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}" />
                             <dxb:BarButtonItem
-                                Content="Coming Soon"
+                                Content="Import artikala"
+                                Command="{Binding ImportCommand}"
                                 Glyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}"
                                 LargeGlyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}"
                                 MediumGlyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}" />
