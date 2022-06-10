@@ -6,6 +6,7 @@
     Title="MainWindow" Height="800" Width="1000"
     xmlns:navigationEnum="clr-namespace:EtnaPOS.Commands" xmlns:i="clr-namespace:DevExpress.Mvvm.UI.Interactivity;assembly=DevExpress.Xpf.Core.v21.2" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
     xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+    xmlns:splash="clr-namespace:EtnaPOS.SplashScreens"
     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     WindowState="Maximized">
     <dx:ThemedWindow.Resources>
@@ -29,6 +30,7 @@
             </dx:DialogService.DialogStyle>
         </dx:DialogService>
         <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding LoadedCommand}"/>
+        <dx:SplashScreenManagerService StartupLocation="CenterScreen" PredefinedSplashScreenType="Fluent"/>
     </dxmvvm:Interaction.Behaviors>
     <Grid>
         <Grid.RowDefinitions>

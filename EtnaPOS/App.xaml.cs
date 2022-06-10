@@ -8,8 +8,11 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Core;
 using EtnaPOS.DAL.Models;
+using EtnaPOS.SplashScreens;
 using EtnaPOS.Windows;
 
 
@@ -53,8 +56,23 @@ namespace EtnaPOS
             return (T?)ServiceProvider.GetService(typeof(T));
         }
 
+        public void FireSplashScreen()
+        {
+            SplashScreenManager.Create(() => new Startup(), new DXSplashScreenViewModel
+            {
+                IsIndeterminate = true,
+                Title = "POS",
+                Subtitle = "Ucitavanje...",
+                Logo = new Uri("../../Images/Logo.png", UriKind.Relative),
+                Status = "Loading the application"
+            }).ShowOnStartup();
+
+        }
+
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            FireSplashScreen();
+
             ConfigureServices();
             CreateInitialCategory();
 
@@ -69,6 +87,7 @@ namespace EtnaPOS
 
         private void CreateInitialCategory()
         {
+            
             var _db = App.GetService<EtnaDbContext>();
             var artikli = _db.Kategorije.FirstOrDefault(s => s.Kategorija == "Artikli");
             if (artikli == null)

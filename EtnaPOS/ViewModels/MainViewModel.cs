@@ -62,9 +62,9 @@ namespace EtnaPOS.ViewModels
             BackofficeCommand = new DelegateCommand(OpenBackofficeWindow);
             LoadedCommand = new DelegateCommand(OnLoaded);
             _ea = ea;
-          
-        }
 
+        }
+        
         private void OnLoaded()
         {
             ShowDialog();
