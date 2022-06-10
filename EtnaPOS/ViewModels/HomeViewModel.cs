@@ -10,14 +10,17 @@ using EtnaPOS.DAL.DataAccess;
 using EtnaPOS.DAL.Models;
 using EtnaPOS.Models;
 using EtnaPOS.Services;
+using EtnaPOS.SplashScreens.Events;
 using EtnaPOS.ViewModels.Dialogs;
-using Prism.Commands;
+using Microsoft.Extensions.Logging;
+using DelegateCommand = Prism.Commands.DelegateCommand;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
 namespace EtnaPOS.ViewModels
 {
     public class HomeViewModel : BaseViewModel
     {
+
         private EtnaDbContext _db => App.GetService<EtnaDbContext>();
         public ICommand OpenDesignerCommand { get; }
         public ICommand ImportCommand { get; }
@@ -25,7 +28,8 @@ namespace EtnaPOS.ViewModels
         public ICommand PrintSettings { get; }
         public ICommand CloseDayCommand { get; }
         public ICommand DopunaCommand { get; }
-
+        private ILogger<HomeViewModel> logger => App.GetService<ILogger<HomeViewModel>>();
+        private ISplashScreenEvent splashScreen => App.GetService<ISplashScreenEvent>();
         public HomeViewModel()
         {
             OpenDesignerCommand = new DelegateCommand(OpenDesigner);
@@ -34,8 +38,8 @@ namespace EtnaPOS.ViewModels
             PrintSettings = new DevExpress.Mvvm.DelegateCommand(OpenSettings);
             CloseDayCommand = new DelegateCommand(CloseWorkDay);
             DopunaCommand = new DevExpress.Mvvm.DelegateCommand(PrintDopuna);
-        }
 
+        }
         private void PrintDopuna()
         {
             var documents = _db.Documents.Where(s => s.Date == WorkDay.Date)
@@ -43,6 +47,7 @@ namespace EtnaPOS.ViewModels
             if (documents == null || !documents.Any())
             {
                 MessageBox.Show("ERROR 45 PRINT DOPUNA, NEMA DOKUMENATA");
+                logger.LogError("Print error, nema dokumenta");
                 return;
             }
 
@@ -161,6 +166,14 @@ namespace EtnaPOS.ViewModels
 
         private void ImportArticles()
         {
+            splashScreen.StartSplashScreen("Importing articles");
+            for (int i = 0; i < 1110000; i++)
+            {
+                Thread.Sleep(500);
+                splashScreen.SplashScreenTextChange(i.ToString());
+            }
+            splashScreen.StopSplashScreen();
+            
             int id = 0;
             var doesExist = _db.Kategorije.FirstOrDefault(n => n.Kategorija == "Svi Artikli");
             if (doesExist == null)
@@ -185,12 +198,28 @@ namespace EtnaPOS.ViewModels
             openFileDialog.Filter = "CSV Files (*.csv)|*.csv";
             if (openFileDialog.ShowDialog() == true)
             {
-                List<Artikal> artikli = File.ReadAllLines(openFileDialog.FileName)
+                splashScreen.StartSplashScreen("Ubacivanje artikala");
+                try
+                {
+                    splashScreen.SplashScreenTextChange("Mapiranje artikala");
+                    List<Artikal> artikli = File.ReadAllLines(openFileDialog.FileName)
                                             .Skip(1)
                                             .Select(v => Artikal.FromCsv(v, id)).ToList();
-                
-                _db.Artikli.AddRange(artikli);
-                _db.SaveChanges();
+                    splashScreen.SplashScreenTextChange("Dodavanje u bazu.");
+                    _db.Artikli.AddRange(artikli);
+                    splashScreen.SplashScreenTextChange("Cuvanje");
+                    _db.SaveChanges();
+                    splashScreen.SplashScreenTextChange("Uspesno!");
+                }
+                catch(Exception ex)
+                {
+                    logger.LogCritical("Dodavanje artikla ima gresku: " + ex.Message);
+
+                    splashScreen.SplashScreenTextChange("GRESKA!");
+
+                    MessageBox.Show("Dodavanje artikala ima gresku: " + ex.Message);
+                }
+                splashScreen.StopSplashScreen();
             }
         }
 

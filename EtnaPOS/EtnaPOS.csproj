@@ -47,7 +47,6 @@
     <Folder Include="Images\TreeViewImages\" />
     <Folder Include="DTO\" />
     <Folder Include="Data\" />
-    <Folder Include="SplashScreens\" />
     <Folder Include="Reports\" />
   </ItemGroup>
 

@@ -9,11 +9,14 @@ using System.Windows;
 using System.Windows.Input;
 using DevExpress.Xpf.Core;
 using DevExpress.Xpf.Editors;
+using EtnaPOS.SplashScreens.Events;
 
 namespace EtnaPOS.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
+        
+
         private readonly INavigationStore _navigationStore;
         private readonly IViewFactory _viewFactory;
         private readonly IEventAggregator _ea;
@@ -21,6 +24,9 @@ namespace EtnaPOS.ViewModels
         public NavigationCommand NavigationCommand { get; }
         public ICommand BackofficeCommand { get; set; }
         public ICommand LoadedCommand { get; set; }
+        private ISplashScreenEvent splashScreen => App.GetService<ISplashScreenEvent>();
+        private ISplashScreenManagerService SplashScreenManagerService =>
+            GetService<ISplashScreenManagerService>();
         private DateTime _selectedDate = DateTime.Now.Date;
         protected IDialogService DialogService
         {
@@ -57,14 +63,36 @@ namespace EtnaPOS.ViewModels
             _navigationStore = navigationStore;
             _viewFactory = viewFactory;
             NavigationCommand = new NavigationCommand(_navigationStore, _viewFactory);
+
             _navigationStore.ViewChanged += _navigationStore_ViewChanged;
             ManageTablesCommand = new DelegateCommand(OnKeyCombinationPresses);
             BackofficeCommand = new DelegateCommand(OpenBackofficeWindow);
             LoadedCommand = new DelegateCommand(OnLoaded);
+
             _ea = ea;
 
+            splashScreen.OnSplashScreen += HomeViewModel_OnSplashScreen;
+            splashScreen.OnStopSplashScreen += HomeViewModel_OnStopSplashScreen;
+            splashScreen.OnTextChange += ChangeText;
         }
-        
+
+        private void HomeViewModel_OnStopSplashScreen(object source, EventArgs e)
+        {
+            SplashScreenManagerService.Close();
+        }
+
+        private void HomeViewModel_OnSplashScreen(object source, SplashEventArgs e)
+        {
+            SplashScreenManagerService.ViewModel = new DXSplashScreenViewModel();
+            SplashScreenManagerService.ViewModel.Subtitle = e.Text;
+            SplashScreenManagerService.Show();
+            
+        }
+
+        private void ChangeText(object source, SplashEventArgs e)
+        {
+            SplashScreenManagerService.ViewModel.Status = e.Text;
+        }
         private void OnLoaded()
         {
             ShowDialog();
@@ -91,6 +119,10 @@ namespace EtnaPOS.ViewModels
         public override void Dispose()
         {
             _navigationStore.ViewChanged -= _navigationStore_ViewChanged;
+            splashScreen.OnSplashScreen -= HomeViewModel_OnSplashScreen;
+            splashScreen.OnStopSplashScreen -= HomeViewModel_OnStopSplashScreen;
+            splashScreen.OnTextChange -= ChangeText;
+
             CurrentViewModel.Dispose();
             base.Dispose();
         }

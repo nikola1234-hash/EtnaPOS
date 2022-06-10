@@ -13,6 +13,7 @@ using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Core;
 using EtnaPOS.DAL.Models;
 using EtnaPOS.SplashScreens;
+using EtnaPOS.SplashScreens.Events;
 using EtnaPOS.Windows;
 
 
@@ -42,9 +43,11 @@ namespace EtnaPOS
             services.AddSingleton<IViewFactory, ViewFactory>();
             services.AddSingleton<IEventAggregator, EventAggregator>();
 
-            services.AddTransient<MainViewModel>();
-            services.AddTransient<HomeViewModel>();
-            services.AddTransient<PosViewModel>();
+            services.AddSingleton<ISplashScreenEvent, SplashScreenEvent>();
+
+            services.AddSingleton<MainViewModel>();
+            services.AddSingleton<HomeViewModel>();
+            services.AddSingleton<PosViewModel>();
 
 
             Configuration = builder.Build();
@@ -75,7 +78,7 @@ namespace EtnaPOS
 
             ConfigureServices();
             CreateInitialCategory();
-
+            ThemedWindow.RoundCorners = true;
             var viewModel = ServiceProvider.GetRequiredService<MainViewModel>();
             MainWindow window = new MainWindow
             {

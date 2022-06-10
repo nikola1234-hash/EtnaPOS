@@ -3,7 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-    Title="SelectPrinterDialog" Height="200" Width="400"
+    Title="Opcije stampe" Height="200" Width="400" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
     >
 
     <Grid>

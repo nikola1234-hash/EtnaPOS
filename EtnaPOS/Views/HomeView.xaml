@@ -1,27 +1,92 @@
-﻿<UserControl x:Class="EtnaPOS.Views.HomeView"
+﻿<UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:layoutControl="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+             xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon"
+             x:Class="EtnaPOS.Views.HomeView"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        <Button Margin="0 10 0 0" Content="Select printer" Command="{Binding OpenDesignerCommand}"></Button>
-        <Button Margin="10 10 0 0" Grid.Row="0" Grid.Column="1" Background="DimGray" Content="Zatvaranje dana" Command="{Binding CloseDayCommand}"></Button>
-        <Button Margin="0 10 0 0" Grid.Row="1" Content="Uvezi artikle" Command="{Binding ImportCommand}"></Button>
-        <Button Margin="0 10 0 0" Grid.Row="2" Content="Zaduzenje" Command="{Binding ZaduzenjeCommand}"></Button>
-        <Button Margin="10 10 0 0" Grid.Column="1" Grid.Row="1" Content="Dopuna" Command="{Binding DopunaCommand}"></Button>
+        <DockPanel Grid.Row="0">
+            <dxr:RibbonControl
+                ShowApplicationButton="False"
+                ToolbarShowMode="Hide">
+                <dxr:RibbonDefaultPageCategory>
+                    <dxr:RibbonPage>
+                        <dxr:RibbonPageGroup>
+                            <dxb:BarButtonItem
+                                Command="{Binding ZaduzenjeCommand}"
+                                Content="Zaduzenje"
+                                Glyph="{dx:DXImage SvgImages/Spreadsheet/Financial.svg}"
+                                LargeGlyph="{dx:DXImage SvgImages/Spreadsheet/Financial.svg}"
+                                MediumGlyph="{dx:DXImage SvgImages/Spreadsheet/Financial.svg}" />
+                            <dxb:BarButtonItem
+                                Command="{Binding DopunaCommand}"
+                                Content="Stampa Dopune"
+                                Glyph="{dx:DXImage SvgImages/XAF/Action_Reload.svg}"
+                                LargeGlyph="{dx:DXImage SvgImages/XAF/Action_Reload.svg}"
+                                MediumGlyph="{dx:DXImage SvgImages/XAF/Action_Reload.svg}" />
+                         
+                           
+                        </dxr:RibbonPageGroup>
+                        
+                        <dxr:RibbonPageGroup>
+                            <dxb:BarButtonItem
+                                Command="{Binding OpenDesignerCommand}"
+                                Content="Podesavanje stampe"
+                                Glyph="{dx:DXImage SvgImages/XAF/Action_Printing_PageSetup.svg}"
+                                LargeGlyph="{dx:DXImage SvgImages/XAF/Action_Printing_PageSetup.svg}"
+                                MediumGlyph="{dx:DXImage SvgImages/XAF/Action_Printing_PageSetup.svg}" />
+                            <dxb:BarButtonItem
+                                Content="Generalna podesavanja"
+                                Glyph="{dx:DXImage SvgImages/XAF/ModelEditor_Settings.svg}"
+                                LargeGlyph="{dx:DXImage SvgImages/XAF/ModelEditor_Settings.svg}"
+                                MediumGlyph="{dx:DXImage SvgImages/XAF/ModelEditor_Settings.svg}" />
+                            <dxb:BarButtonItem
+                                Content="Coming Soon"
+                                Glyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}"
+                                LargeGlyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}"
+                                MediumGlyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}" />
+                            <dxb:BarButtonItem
+                                Content="Coming Soon"
+                                Glyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}"
+                                LargeGlyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}"
+                                MediumGlyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}" />
+                            <dxb:BarButtonItem
+                                Content="Coming Soon"
+                                Glyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}"
+                                LargeGlyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}"
+                                MediumGlyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}" />
+                         
+                        </dxr:RibbonPageGroup>
+
+                        <dxr:RibbonPageGroup Caption="Zavrsavanje">
+                            <dxb:BarButtonItem Margin="5 0 "
+                                Command="{Binding CloseDayCommand}"
+                                Content="Zatvaranje dana"
+                                Alignment="Far"
+                                Glyph="{dx:DXImage SvgImages/XAF/Action_Logoff.svg}"
+                                LargeGlyph="{dx:DXImage SvgImages/XAF/Action_Logoff.svg}"
+                                MediumGlyph="{dx:DXImage SvgImages/XAF/Action_Logoff.svg}" />
+                        </dxr:RibbonPageGroup>
+
+                    </dxr:RibbonPage>
+
+                </dxr:RibbonDefaultPageCategory>
+
+            </dxr:RibbonControl>
+        </DockPanel>
+
     </Grid>
 </UserControl>
