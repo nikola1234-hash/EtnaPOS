@@ -5,9 +5,13 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <AssemblyVersion>1.0.1.1</AssemblyVersion>
+    <FileVersion>1.0.1.1</FileVersion>
     <SignAssembly>False</SignAssembly>
+    <PackageIcon>ecommerce-cart-icon.png</PackageIcon>
+    <PackageReleaseNotes>Implemented Images on home page
+Implemented Splash Screen
+Implemented Round corners</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -73,6 +77,10 @@
   <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Images\Icon\ecommerce-cart-icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
     <None Update="Images\TreeViewImages\Active.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
