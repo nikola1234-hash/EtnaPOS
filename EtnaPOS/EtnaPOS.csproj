@@ -14,6 +14,8 @@ Implemented Splash Screen
 Implemented Round corners</PackageReleaseNotes>
     <ApplicationIcon>Images\Icon\fooddome_118034.ico</ApplicationIcon>
     <PlatformTarget>x86</PlatformTarget>
+    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+    <StartupObject></StartupObject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
