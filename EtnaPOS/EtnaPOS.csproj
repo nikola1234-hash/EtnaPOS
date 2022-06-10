@@ -12,6 +12,8 @@
     <PackageReleaseNotes>Implemented Images on home page
 Implemented Splash Screen
 Implemented Round corners</PackageReleaseNotes>
+    <ApplicationIcon>Images\Icon\fooddome_118034.ico</ApplicationIcon>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -21,6 +23,10 @@ Implemented Round corners</PackageReleaseNotes>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Images\Icon\fooddome_118034.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="devexpress.wpf.controls" Version="21.2.3" />
