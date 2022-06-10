@@ -203,6 +203,10 @@ namespace EtnaPOS.ViewModels
 
         private void OrderCheckOut()
         {
+            bool canPrint = false;
+            bool canSave = false;
+
+
             ///Ako udjemo i izadjemo sa stola be kucanja.
             if (dbDocument == null && Korpa.Count == 0)
             {
@@ -220,12 +224,12 @@ namespace EtnaPOS.ViewModels
             }
             if (Korpa.Count > 0)
             {
-               
                 if (dbDocument != null)
                 {
                     foreach (var artikal in Korpa)
                     {
-                        
+                        var art = db.Artikli.Find(artikal.Artikal.Id);
+
                         foreach (var documentOrder in dbDocument.Orders.ToList())
                         {
                             if (documentOrder.ArtikalId == artikal.Artikal.Id)
@@ -233,11 +237,20 @@ namespace EtnaPOS.ViewModels
                                 if (documentOrder.Count != artikal.Count)
                                 {
                                     documentOrder.Count = artikal.Count;
-                                    
+
+
+                                    var orderForPrint = new Order();
+                                    orderForPrint.Artikal = artikal.Artikal;
+                                    orderForPrint.Count = artikal.Count;
+                                    printOrders.Add(orderForPrint);
+
+                                    canSave = true;
+                                    canPrint = true;
+
                                 }
                               
                             }
-                            else
+                            else if(!dbDocument.Orders.Any(s => s.Artikal.Id == art.Id))
                             {
                                 var order = db.Orders.Create();
                                 order.Artikal = artikal.Artikal;
@@ -253,14 +266,21 @@ namespace EtnaPOS.ViewModels
                                 dbDocument.Orders.Add(order);
                                 
                                 printOrders.Add(order);
-                                
+
+                                canPrint = true;
+                                canSave = true;
+
                             }
                         }
                     }
 
+                    if (canPrint)
+                    {
+                        PrintReceipt printeReceipt = new PrintReceipt(printOrders);
+                        printeReceipt.Blok();
+                    }
 
-                    PrintReceipt printeReceipt = new PrintReceipt(printOrders);
-                    printeReceipt.Blok();
+                    
 
                 }
                 else
@@ -293,6 +313,9 @@ namespace EtnaPOS.ViewModels
                     };
                     dbDocument = db.Documents.Add(doc);
 
+                    canPrint = true;
+                    canSave = true;
+
                     var dan = db.ZatvaranjeDanas.FirstOrDefault(s => s.Date == WorkDay.Date);
                     if (dan.Documents == null)
                     {
@@ -300,20 +323,26 @@ namespace EtnaPOS.ViewModels
                     }
                     dan.Documents.Add(dbDocument);
 
-                    PrintReceipt printReceipt = new PrintReceipt(orders.ToList());
-                    printReceipt.Blok();
+
+                    if (canPrint)
+                    {
+                        PrintReceipt printReceipt = new PrintReceipt(orders.ToList());
+                        printReceipt.Blok();
+                    }
+
                 }
 
 
                 try
                 {
-
-                    db.SaveChanges();
-
+                    if (canSave)
+                    {
+                        db.SaveChanges();
+                    }
                 }
                 catch (Exception ex)
                 {
-
+                    
                     MessageBox.Show(ex.Message, "Greska prilikom cuvanja dokumenta");
                 }
 
@@ -332,8 +361,11 @@ namespace EtnaPOS.ViewModels
         private void CloseOrder()
         {
             
+
             if (dbDocument != null)
             {
+                OrderCheckOut();
+
                 dbDocument.TotalPrice = dbDocument.Orders.Sum(s => s.Price);
                 dbDocument.IsOpen = false;
                 var eState = db.SaveChanges();
@@ -425,6 +457,7 @@ namespace EtnaPOS.ViewModels
 
         public override void Dispose()
         {
+            System.GC.SuppressFinalize(this);
             base.Dispose();
             
         }

@@ -7,12 +7,11 @@ namespace EtnaPOS.Services
     public class ViewFactory : IViewFactory
     {
         private readonly HomeViewModel _homeViewModel;
-        private readonly PosViewModel _posViewModel;
 
-        public ViewFactory(HomeViewModel homeViewModel, PosViewModel posViewModel)
+        public ViewFactory(HomeViewModel homeViewModel)
         {
             _homeViewModel = homeViewModel;
-            _posViewModel = posViewModel;
+
         }
 
         public BaseViewModel CreateView(Navigation navigation)
@@ -22,7 +21,7 @@ namespace EtnaPOS.Services
                 case Navigation.Home:
                     return _homeViewModel;
                 case Navigation.POS:
-                    return _posViewModel;
+                    return new PosViewModel();
                 case Navigation.BackOffice:
                     return new HomeViewModel();
                 default:

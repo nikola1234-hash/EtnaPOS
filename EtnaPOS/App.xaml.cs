@@ -45,9 +45,9 @@ namespace EtnaPOS
 
             services.AddSingleton<ISplashScreenEvent, SplashScreenEvent>();
 
-            services.AddSingleton<MainViewModel>();
-            services.AddSingleton<HomeViewModel>();
-            services.AddSingleton<PosViewModel>();
+            services.AddTransient<MainViewModel>();
+            services.AddTransient<HomeViewModel>();
+            //services.AddTransient<PosViewModel>();
 
 
             Configuration = builder.Build();
@@ -78,7 +78,10 @@ namespace EtnaPOS
 
             ConfigureServices();
             CreateInitialCategory();
+
+
             ThemedWindow.RoundCorners = true;
+
             var viewModel = ServiceProvider.GetRequiredService<MainViewModel>();
             MainWindow window = new MainWindow
             {

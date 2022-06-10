@@ -233,5 +233,11 @@ namespace EtnaPOS.ViewModels
             SelectPrinterDialog printer = new SelectPrinterDialog();
             printer.ShowDialog();
         }
+
+        public override void Dispose()
+        {
+            System.GC.SuppressFinalize(this);
+            base.Dispose();
+        }
     }
 }

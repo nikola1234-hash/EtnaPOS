@@ -124,6 +124,7 @@ namespace EtnaPOS.ViewModels
             splashScreen.OnTextChange -= ChangeText;
 
             CurrentViewModel.Dispose();
+            System.GC.SuppressFinalize(this);
             base.Dispose();
         }
     }

@@ -25,6 +25,21 @@ Implemented Round corners</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\**" />
+    <Compile Remove="DTO\**" />
+    <Compile Remove="Reports\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <EmbeddedResource Remove="DTO\**" />
+    <EmbeddedResource Remove="Reports\**" />
+    <None Remove="Data\**" />
+    <None Remove="DTO\**" />
+    <None Remove="Reports\**" />
+    <Page Remove="Data\**" />
+    <Page Remove="DTO\**" />
+    <Page Remove="Reports\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Images\Icon\fooddome_118034.ico" />
   </ItemGroup>
 
@@ -55,9 +70,6 @@ Implemented Round corners</PackageReleaseNotes>
 
   <ItemGroup>
     <Folder Include="Images\TreeViewImages\" />
-    <Folder Include="DTO\" />
-    <Folder Include="Data\" />
-    <Folder Include="Reports\" />
   </ItemGroup>
 
   <ItemGroup>
