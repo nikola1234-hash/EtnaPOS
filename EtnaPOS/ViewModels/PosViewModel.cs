@@ -118,7 +118,6 @@ namespace EtnaPOS.ViewModels
         {
             _ea.GetEvent<PassObjectEvent>().Unsubscribe(AddNewTable);
             _ea.GetEvent<ManageTableKey>().Unsubscribe(ManageTables);
-            System.GC.SuppressFinalize(this);
             base.Dispose();
         }
     }

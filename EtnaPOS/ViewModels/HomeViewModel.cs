@@ -230,7 +230,6 @@ namespace EtnaPOS.ViewModels
 
         public override void Dispose()
         {
-            System.GC.SuppressFinalize(this);
             base.Dispose();
         }
     }

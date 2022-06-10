@@ -48,7 +48,7 @@ namespace EtnaPOS.ViewModels
             DialogService = this.GetService<IDialogService>("ChoseDate");
             var dsViewModel = new DialogServiceViewModel();
             var result = DialogService.ShowDialog(dsViewModel.DialogCommands, "Radni dan", viewModel: dsViewModel);
-            if ((MessageBoxResult)result.Id == MessageBoxResult.OK)
+            if (result.IsCancel == false)
             {
                 return;
             }
@@ -124,7 +124,6 @@ namespace EtnaPOS.ViewModels
             splashScreen.OnTextChange -= ChangeText;
 
             CurrentViewModel.Dispose();
-            System.GC.SuppressFinalize(this);
             base.Dispose();
         }
     }

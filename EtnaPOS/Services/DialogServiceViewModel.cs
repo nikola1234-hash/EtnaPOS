@@ -81,20 +81,30 @@ namespace EtnaPOS.Services
         {
             if (SelectedDate != null)
             {
-                var db = App.GetService<EtnaDbContext>();
-                if (SelectedDate == DateTime.Now.Date)
+                try
                 {
+
+                    var db = App.GetService<EtnaDbContext>();
+                    
                     WorkDay.Date = SelectedDate;
+
                     var otvaranjeDana = new ZatvaranjeDana(WorkDay.Date);
                     var day = db.ZatvaranjeDanas.FirstOrDefault(s => s.Date == WorkDay.Date);
-                    if (day != null && day.IsClosed)
+                    if (db.ZatvaranjeDanas.Any(s => s.IsClosed == false && s.Date != WorkDay.Date))
                     {
+                        var dan = db.ZatvaranjeDanas.FirstOrDefault(s => s.IsClosed == false && s.Date != WorkDay.Date);
+                        MessageBox.Show("Datum :" + dan.Date.Date + " je i dalje otvoren");
                         obj.Cancel = true;
-                        MessageBox.Show("Ovaj dan je zakljucan ?", "Upozorenje");
 
                     }
+                    else if (day != null && day.IsClosed)
+                    {
+                     
+                        MessageBox.Show("Ovaj dan je zakljucan ?", "Upozorenje");
+                        obj.Cancel = true;
+                    }
 
-                    if (day != null && day.IsClosed == false)
+                    else if (day != null && day.IsClosed == false)
                     {
                         obj.Cancel = false;
                     }
@@ -105,9 +115,12 @@ namespace EtnaPOS.Services
                         obj.Cancel = false;
                     }
                 }
+                catch (Exception ex)
+                {
+
+                    MessageBox.Show(ex.Message);
+                }
             }
-
-
         }
 
     }
