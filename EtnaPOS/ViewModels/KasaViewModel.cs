@@ -237,7 +237,7 @@ namespace EtnaPOS.ViewModels
                                 if (documentOrder.Count != artikal.Count)
                                 {
                                     documentOrder.Count = artikal.Count;
-
+                                    documentOrder.Price = artikal.Count * artikal.Artikal.Price;
 
                                     var orderForPrint = new Order();
                                     orderForPrint.Artikal = artikal.Artikal;
