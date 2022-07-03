@@ -93,7 +93,7 @@ namespace EtnaPOS.Services
                     if (db.ZatvaranjeDanas.Any(s => s.IsClosed == false && s.Date != WorkDay.Date))
                     {
                         var dan = db.ZatvaranjeDanas.FirstOrDefault(s => s.IsClosed == false && s.Date != WorkDay.Date);
-                        MessageBox.Show("Datum :" + dan.Date.Date + " je i dalje otvoren");
+                        MessageBox.Show("Datum :" + dan.Date.Date.ToShortDateString() + " je i dalje otvoren");
                         obj.Cancel = true;
 
                     }

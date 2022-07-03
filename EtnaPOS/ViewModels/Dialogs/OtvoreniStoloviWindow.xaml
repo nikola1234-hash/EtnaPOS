@@ -1,0 +1,15 @@
+﻿<dx:ThemedWindow
+    x:Class="EtnaPOS.ViewModels.Dialogs.OtvoreniStoloviWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    Title="Otvoreni stolovi" Height="200" Width="400" WindowStartupLocation="CenterScreen" WindowState="Normal" ResizeMode="NoResize"
+    >
+
+<Grid>
+        <StackPanel Width="200" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Label HorizontalContentAlignment="Center" Content="Iznos na otvorenim stolovima:"></Label>
+            <Label HorizontalContentAlignment="Center" x:Name="label" FontSize="20" Height="40"></Label>
+        </StackPanel>
+    </Grid>
+</dx:ThemedWindow>

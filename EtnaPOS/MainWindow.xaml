@@ -43,6 +43,7 @@
                 <dxnav:NavButton Content="Home" Command="{Binding NavigationCommand}" CommandParameter="{x:Static navigationEnum:Navigation.Home}" AllowGlyphTheming="True"/>
                 <dxnav:NavButton Content="POS" Command="{Binding NavigationCommand}" CommandParameter="{x:Static navigationEnum:Navigation.POS}" AllowGlyphTheming="True"/>
                 <dxnav:NavButton Content="Backoffice" Command="{Binding BackofficeCommand}" AllowGlyphTheming="True"/>
+                <dxnav:NavButton Content="{Binding WorkDay}"  HorizontalAlignment="Right"></dxnav:NavButton>
             </dxnav:TileNavPane.NavButtons>
         </dxnav:TileNavPane>
         <ContentControl Grid.Row="1" Content="{Binding CurrentViewModel, Mode=Default}"/>

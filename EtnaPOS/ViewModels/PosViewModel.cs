@@ -71,8 +71,7 @@ namespace EtnaPOS.ViewModels
 
 
             _ea.GetEvent<ManageTableKey>().Subscribe(ManageTables);
-            _ea.GetEvent<PassObjectEvent>().Subscribe(AddNewTable);
-            
+
         }
 
         private void OpenTableWindow(int id)
@@ -101,12 +100,14 @@ namespace EtnaPOS.ViewModels
 
         private void CreateNewTable()
         {
+            _ea.GetEvent<PassObjectEvent>().Subscribe(AddNewTable);
             // Using this as generic single add item window
             CreateCategoryWindow window = new CreateCategoryWindow
             {
                 DataContext = new AddTableViewModel()
             };
             window.ShowDialog();
+            _ea.GetEvent<PassObjectEvent>().Unsubscribe(AddNewTable);
         }
 
         private void ManageTables()
@@ -116,7 +117,7 @@ namespace EtnaPOS.ViewModels
         }
         public override void Dispose()
         {
-            _ea.GetEvent<PassObjectEvent>().Unsubscribe(AddNewTable);
+           
             _ea.GetEvent<ManageTableKey>().Unsubscribe(ManageTables);
             base.Dispose();
         }

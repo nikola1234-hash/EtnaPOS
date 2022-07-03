@@ -120,4 +120,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="ViewModels\Dialogs\OtvoreniStoloviWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
+
 </Project>

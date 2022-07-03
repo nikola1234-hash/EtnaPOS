@@ -32,6 +32,12 @@
                                 LargeGlyph="{dx:DXImage SvgImages/Spreadsheet/Financial.svg}"
                                 MediumGlyph="{dx:DXImage SvgImages/Spreadsheet/Financial.svg}" />
                             <dxb:BarButtonItem
+                                Command="{Binding OtvoreniStoloviCommand}"
+                                Content="Otvoreni stolovi"
+                                Glyph="{dx:DXImage SvgImages/Icon Builder/Business_DollarCircled.svg}"
+                                LargeGlyph="{dx:DXImage SvgImages/Icon Builder/Business_DollarCircled.svg}"
+                                MediumGlyph="{dx:DXImage SvgImages/Icon Builder/Business_DollarCircled.svg}" />
+                            <dxb:BarButtonItem
                                 Command="{Binding DopunaCommand}"
                                 Content="Stampa Dopune"
                                 Glyph="{dx:DXImage SvgImages/XAF/Action_Reload.svg}"

@@ -6,13 +6,16 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Input;
+using DevExpress.Mvvm.Native;
 using EtnaPOS.DAL.DataAccess;
 using EtnaPOS.DAL.Models;
+using EtnaPOS.EtnaEventArgs;
 using EtnaPOS.Models;
 using EtnaPOS.Services;
 using EtnaPOS.SplashScreens.Events;
 using EtnaPOS.ViewModels.Dialogs;
 using Microsoft.Extensions.Logging;
+using Prism.Events;
 using DelegateCommand = Prism.Commands.DelegateCommand;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
@@ -22,12 +25,14 @@ namespace EtnaPOS.ViewModels
     {
 
         private EtnaDbContext _db => App.GetService<EtnaDbContext>();
+        private IEventAggregator ea => App.GetService<IEventAggregator>();
         public ICommand OpenDesignerCommand { get; }
         public ICommand ImportCommand { get; }
         public ICommand ZaduzenjeCommand { get; }
         public ICommand PrintSettings { get; }
         public ICommand CloseDayCommand { get; }
         public ICommand DopunaCommand { get; }
+        public ICommand OtvoreniStoloviCommand { get; }
         private ILogger<HomeViewModel> logger => App.GetService<ILogger<HomeViewModel>>();
         private ISplashScreenEvent splashScreen => App.GetService<ISplashScreenEvent>();
         public HomeViewModel()
@@ -38,8 +43,16 @@ namespace EtnaPOS.ViewModels
             PrintSettings = new DevExpress.Mvvm.DelegateCommand(OpenSettings);
             CloseDayCommand = new DelegateCommand(CloseWorkDay);
             DopunaCommand = new DevExpress.Mvvm.DelegateCommand(PrintDopuna);
+            OtvoreniStoloviCommand = new DevExpress.Mvvm.DelegateCommand(OtvoreniStolovi);
 
         }
+
+        private void OtvoreniStolovi()
+        {
+            OtvoreniStoloviWindow window = new OtvoreniStoloviWindow();
+            window.ShowDialog();
+        }
+
         private void PrintDopuna()
         {
             var documents = _db.Documents.Where(s => s.Date == WorkDay.Date)
@@ -97,68 +110,98 @@ namespace EtnaPOS.ViewModels
                 .FirstOrDefault();
             if (day == null)
             {
-                MessageBox.Show("Error 93 CLOSE WORK DAY");
+                MessageBox.Show("Error 109 CLOSE WORK DAY");
                 return;
             }
-
-            if (day.Documents.Any(c => c.IsOpen))
+            try 
             {
-                MessageBox.Show("Imate otvorene stolove");
-                return;
-            }
-
-
-            try
-            {
-                day.IsClosed = true;
-
-                _db.SaveChanges();
-
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show(ex.Message, "Greska");
-            }
-            List<ArtikalDopuna> artikliZaDopunu = new List<ArtikalDopuna>();
-            foreach (var dopuna in day.Documents)
-            {
-                foreach (var order in dopuna.Orders)
+                IEnumerable<Document> documents = new List<Document>();
+                bool hasDocuments = false;
+                if (day.Documents.Any(c => c.IsOpen))
                 {
-                    var a = artikliZaDopunu.FirstOrDefault(s => s.Name == order.Artikal.Name);
-                    if (a != null)
+                    var dialogResult = MessageBox.Show("Imate otvorene stolove, da li zelite da ih prebacite u novi radni dan?"
+                                    , "Obavestenje", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
                     {
-                        a.Count += order.Count;
+                        documents = day.Documents.Where(c => c.IsOpen).ToList();
+
+                        foreach (var document in documents)
+                        {
+                            day.Documents.Remove(document);
+                        }
+
+                        hasDocuments = true;
+                        day.IsClosed = true;
+                        _db.SaveChanges();
+                        ea.GetEvent<ChoseWorkingDayEventAggregator>().Publish();
+
+                        var newDay = _db.ZatvaranjeDanas.FirstOrDefault(s => s.IsClosed == false);
+
+                        if(newDay.Documents == null) newDay.Documents = new List<Document>();
+
+                        foreach (var document in documents)
+                        {
+                            document.Date = WorkDay.Date;
+                            newDay.Documents.Add(document);
+                        }
+
+                        _db.SaveChanges();
+
+                        MessageBox.Show("Uspesno prebaceni dokumenti u novi dan");
                     }
                     else
                     {
-                        artikliZaDopunu.Add(new ArtikalDopuna(order.Artikal.Name, order.Count));
+                        return;
                     }
                 }
-            }
 
-            try
-            {
+
+                if (!hasDocuments)
+                {
+                    day.IsClosed = true;
+
+                    _db.SaveChanges();
+                }
+                List<ArtikalDopuna> artikliZaDopunu = new List<ArtikalDopuna>();
+                foreach (var dopuna in day.Documents)
+                {
+                    foreach (var order in dopuna.Orders)
+                    {
+                        var a = artikliZaDopunu.FirstOrDefault(s => s.Name == order.Artikal.Name);
+                        if (a != null)
+                        {
+                            a.Count += order.Count;
+                        }
+                        else
+                        {
+                            artikliZaDopunu.Add(new ArtikalDopuna(order.Artikal.Name, order.Count));
+                        }
+                    }
+                }
+
                 PrintReceipt zad = new PrintReceipt(day);
                 zad.PrintRazduzenje();
 
-               
+
 
                 PrintReceipt pr = new PrintReceipt(artikliZaDopunu);
                 pr.PrintDopuna();
 
+
+                if (!hasDocuments)
+                {
+                    ea.GetEvent<ChoseWorkingDayEventAggregator>().Publish();
+                }
             }
             catch (Exception ex)
             {
+
                 MessageBox.Show(ex.Message, "Greska");
             }
 
-
         }
-       
-    
 
-    private void OpenSettings()
+        private void OpenSettings()
         {
             Dialogs.PrintSettings ps = new PrintSettings();
             ps.ShowDialog();
@@ -220,7 +263,8 @@ namespace EtnaPOS.ViewModels
         private void OpenZaduzenje()
         {
             ZaduzenjeWindow window = new ZaduzenjeWindow();
-            window.Show();
+            window.ShowDialog();
+            
         }
         private void OpenDesigner()
         {

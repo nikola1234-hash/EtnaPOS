@@ -9,8 +9,12 @@ using System.Windows.Input;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.Native;
 using EtnaPOS.DAL.DataAccess;
+using EtnaPOS.EtnaEventArgs;
 using EtnaPOS.Models;
 using EtnaPOS.Services;
+using EtnaPOS.ViewModels.WindowViewModels;
+using EtnaPOS.Windows;
+using Prism.Events;
 
 namespace EtnaPOS.ViewModels
 {
@@ -102,11 +106,25 @@ namespace EtnaPOS.ViewModels
         }
 
         private ICurrentWindowService _currentWindowService => GetService<ICurrentWindowService>();
+        private IEventAggregator _ea => App.GetService<IEventAggregator>();
         public ICommand DoubleClickCommand { get; }
         public ICommand RemoveCommand { get; }
         public ICommand CheckOutCommand { get; }
         public ICommand ExitCommand { get; }
         public ICommand CloseOrderCommand { get; }
+        public ICommand ChangeTableCommand { get; }
+
+        private bool _canChangeTable;
+
+        public bool CanChangeTable
+        {
+            get { return _canChangeTable; }
+            set
+            {
+                _canChangeTable = value;
+                OnPropertyChanged(nameof(CanChangeTable));
+            }
+        }
 
         private object _selectedItem;
 
@@ -149,13 +167,17 @@ namespace EtnaPOS.ViewModels
             TableNumber = "Sto: " + db.Tables.Find(tableId)!.TableName;
             dbDocument = db.Documents.FirstOrDefault(s => s.TableId == tableId && s.Date == WorkDay.Date && s.IsOpen) ?? null;
 
+            CanChangeTable = dbDocument != null;
+
             DoubleClickCommand = new DelegateCommand(AddArtikalToList);
             RemoveCommand = new DelegateCommand(RemoveArtikalFromList);
-
+          
             CheckOutCommand = new DelegateCommand(OrderCheckOut);
             ExitCommand = new DelegateCommand(CloseWindow);
 
             CloseOrderCommand = new DelegateCommand(CloseOrder);
+
+            ChangeTableCommand = new DelegateCommand(OpenTableListWindow);
 
             Korpa = new ObservableCollection<ArtikalKorpaViewModel>();
             Korpa.CollectionChanged += Korpa_CollectionChanged;
@@ -164,6 +186,25 @@ namespace EtnaPOS.ViewModels
 
             InitializeArticles();
 
+        }
+
+        private void ChangeTable(int id)
+        {
+            dbDocument.TableId = id;
+            db.SaveChanges();
+            CloseWindow();
+        }
+
+        private void OpenTableListWindow()
+        {
+            _ea.GetEvent<ChangeTableEventAggregator>().Subscribe(ChangeTable);
+            ChangeTableWindow window = new ChangeTableWindow()
+            {
+                DataContext = new ChangeTableViewModel()
+            };
+            window.ShowDialog();
+            _ea.GetEvent<ChangeTableEventAggregator>().Unsubscribe(ChangeTable);
+            ((ChangeTableViewModel)window.DataContext).Dispose();
         }
 
         private void InitializeBasket(int tableId)
@@ -457,6 +498,7 @@ namespace EtnaPOS.ViewModels
 
         public override void Dispose()
         {
+           
             base.Dispose();
             
         }

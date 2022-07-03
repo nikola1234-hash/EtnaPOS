@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using DevExpress.Xpf.Core;
 using DevExpress.Xpf.Editors;
+using EtnaPOS.EtnaEventArgs;
 using EtnaPOS.SplashScreens.Events;
 
 namespace EtnaPOS.ViewModels
@@ -22,6 +23,17 @@ namespace EtnaPOS.ViewModels
         private readonly IEventAggregator _ea;
         public ICommand ManageTablesCommand { get; set; }
         public NavigationCommand NavigationCommand { get; }
+        private string _workDay;
+
+        public string WorkDay
+        {
+            get { return _workDay;}
+            set
+            {
+                _workDay = value;
+                OnPropertyChanged(nameof(WorkDay));
+            }
+        }
         public ICommand BackofficeCommand { get; set; }
         public ICommand LoadedCommand { get; set; }
         private ISplashScreenEvent splashScreen => App.GetService<ISplashScreenEvent>();
@@ -50,6 +62,7 @@ namespace EtnaPOS.ViewModels
             var result = DialogService.ShowDialog(dsViewModel.DialogCommands, "Radni dan", viewModel: dsViewModel);
             if (result.IsCancel == false)
             {
+                WorkDay = "Radni dan: " + Models.WorkDay.Date.Date.ToShortDateString();
                 return;
             }
             else
@@ -69,7 +82,11 @@ namespace EtnaPOS.ViewModels
             BackofficeCommand = new DelegateCommand(OpenBackofficeWindow);
             LoadedCommand = new DelegateCommand(OnLoaded);
 
+            
+
             _ea = ea;
+            _ea.GetEvent<ChoseWorkingDayEventAggregator>().Subscribe(ShowDialog);
+
 
             splashScreen.OnSplashScreen += HomeViewModel_OnSplashScreen;
             splashScreen.OnStopSplashScreen += HomeViewModel_OnStopSplashScreen;
@@ -96,6 +113,7 @@ namespace EtnaPOS.ViewModels
         private void OnLoaded()
         {
             ShowDialog();
+           
         }
 
         private void OpenBackofficeWindow()
@@ -122,6 +140,8 @@ namespace EtnaPOS.ViewModels
             splashScreen.OnSplashScreen -= HomeViewModel_OnSplashScreen;
             splashScreen.OnStopSplashScreen -= HomeViewModel_OnStopSplashScreen;
             splashScreen.OnTextChange -= ChangeText;
+
+            _ea.GetEvent<ChoseWorkingDayEventAggregator>().Unsubscribe(ShowDialog);
 
             CurrentViewModel.Dispose();
             base.Dispose();
