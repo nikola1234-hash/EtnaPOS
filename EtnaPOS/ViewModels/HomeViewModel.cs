@@ -33,6 +33,7 @@ namespace EtnaPOS.ViewModels
         public ICommand CloseDayCommand { get; }
         public ICommand DopunaCommand { get; }
         public ICommand OtvoreniStoloviCommand { get; }
+        public ICommand PromenaCenaCommand { get; }
         private ILogger<HomeViewModel> logger => App.GetService<ILogger<HomeViewModel>>();
         private ISplashScreenEvent splashScreen => App.GetService<ISplashScreenEvent>();
         public HomeViewModel()
@@ -44,6 +45,7 @@ namespace EtnaPOS.ViewModels
             CloseDayCommand = new DelegateCommand(CloseWorkDay);
             DopunaCommand = new DevExpress.Mvvm.DelegateCommand(PrintDopuna);
             OtvoreniStoloviCommand = new DevExpress.Mvvm.DelegateCommand(OtvoreniStolovi);
+            PromenaCenaCommand = new DevExpress.Mvvm.DelegateCommand(PriceChangeByCsv);
 
         }
 
@@ -259,7 +261,72 @@ namespace EtnaPOS.ViewModels
                 splashScreen.StopSplashScreen();
             }
         }
+        public void PriceChangeByCsv()
+        {
+            int id = 0;
+            var doesExist = _db.Kategorije.FirstOrDefault(n => n.Kategorija == "Svi Artikli");
+            if (doesExist == null)
+            {
+                var k = new KategorijaArtikla()
+                {
+                    Kategorija = "Svi Artikli",
+                    CreatedBy = "System",
+                    DateCreated = DateTime.Now,
+                    ParentId = 1
+                };
+                var entity = _db.Kategorije.Add(k);
+                _db.SaveChanges();
+                id = entity.Id;
+            }
+            else
+            {
+                id = doesExist.Id;
+            }
 
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "CSV Files (*.csv)|*.csv";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                splashScreen.StartSplashScreen("Menjanje cena");
+                try
+                {
+                    splashScreen.SplashScreenTextChange("Mapiranje artikala");
+                    List<Artikal> artikli = File.ReadAllLines(openFileDialog.FileName)
+                                            .Skip(1)
+                                            .Select(v => Artikal.FromCsv(v, id)).ToList();
+
+                    splashScreen.SplashScreenTextChange("Promena cena...");
+                    var artikliDb = _db.Artikli.ToList();
+                    foreach(var artikl in artikli)
+                    {
+                        foreach(var artiklDb in artikliDb)
+                        {
+                            if(artiklDb.Name == artikl.Name)
+                            {
+                                if(artiklDb.Price != artikl.Price)
+                                {
+                                    artiklDb.Price = artikl.Price;
+                                }
+                            }
+                        }
+                    }
+
+
+                    splashScreen.SplashScreenTextChange("Cuvanje");
+                    _db.SaveChanges();
+                    splashScreen.SplashScreenTextChange("Uspesno!");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogCritical("Promena cene ima gresku: " + ex.Message);
+
+                    splashScreen.SplashScreenTextChange("GRESKA!");
+
+                    MessageBox.Show("Promena cene ima gresku: " + ex.Message);
+                }
+                splashScreen.StopSplashScreen();
+            }
+        }
         private void OpenZaduzenje()
         {
             ZaduzenjeWindow window = new ZaduzenjeWindow();

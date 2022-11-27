@@ -65,7 +65,8 @@
                                 LargeGlyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}"
                                 MediumGlyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}" />
                             <dxb:BarButtonItem
-                                Content="Coming Soon"
+                                Content="Automatska Promena Cene"
+                                Command="{Binding PromenaCenaCommand}"
                                 Glyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}"
                                 LargeGlyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}"
                                 MediumGlyph="{dx:DXImage SvgImages/Business Objects/BO_Audit_ChangeHistory.svg}" />
